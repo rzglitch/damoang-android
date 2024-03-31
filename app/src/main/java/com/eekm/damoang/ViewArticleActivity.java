@@ -154,6 +154,20 @@ public class ViewArticleActivity extends AppCompatActivity {
                                 "<head>\n" +
                                 "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\">\n" +
                                 "<title>View document</title>\n" +
+                                "<style>\n" +
+                                "* {\n" +
+                                "    font-size: 14px;\n" +
+                                "}\n" +
+                                "img {\n" +
+                                "    max-width: 100%;\n" +
+                                "}\n" +
+                                "video, audio {\n" +
+                                "    max-width: 100%;\n" +
+                                "}\n" +
+                                "iframe {\n" +
+                                "    max-width: 100%;\n" +
+                                "}" +
+                                "</style>" +
                                 "</head>\n" +
                                 "<body style=\"padding: 8px\">" + content + "</body>\n" +
                                 "</html>";

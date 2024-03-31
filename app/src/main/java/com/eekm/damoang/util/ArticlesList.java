@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ArticlesList {
     public List<ArticleListModel> links;
@@ -43,6 +44,14 @@ public class ArticlesList {
 
                 if (!parseLink.isEmpty()) {
                     String link = parseLink.attr("abs:href");
+                    Elements num = list.get(i).select(".orangered");
+
+                    if (!num.isEmpty()) {
+                        if (Objects.equals(num.get(0).text(), "공지")) {
+                            continue;
+                        }
+                    }
+
                     String title = parseLink.text();
                     if (title.isEmpty()) {
                         title = list.get(i).select("a strong").text();

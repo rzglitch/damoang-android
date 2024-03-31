@@ -45,9 +45,9 @@ public class ArticleView {
             Elements doc_metadata = list.get(0).select("#bo_v_info .pe-2");
             String recommend = doc_metadata.get(doc_metadata.size()-1).text();
             String views = doc_metadata.get(0).text();
-            String content_img = list.get(0).select("#bo_v_img").html();
-            String content = list.get(0).select("#bo_v_con").html();
-            String merged_content = content_img + content;
+            String content_img = list.get(0).select("#bo_v_img").get(0).toString();
+            String content = list.get(0).select("#bo_v_con.na-convert").get(0).toString();
+            String merged_content = content_img + "\n" + content;
 
             recommend = recommend.split(" ")[0];
             views = views.split(" ")[0];
@@ -59,15 +59,17 @@ public class ArticleView {
             Log.d("commentList", "size: " + cmt.size());
             for (int i = 0; i < cmt.size(); i++) {
                 String cmt_link = cmt.get(i).id();
-                String cmt_content = cmt.get(i).select(".comment-content .na-convert").text();
+                String cmt_content = cmt.get(i).select(".comment-content .na-convert").html();
                 String cmt_nick = cmt.get(i).select(".me-2 .member").text();
                 String cmt_datetime = cmt.get(i).select(".ms-auto").text();
                 String cmt_recommend = cmt.get(i).select(".comment-content div").get(1).text();
 
+                String content_txt = Jsoup.parse(cmt_content).wholeText();
+
                 cmt_datetime = cmt_datetime.split(" ")[1];
                 cmt_recommend = cmt_recommend.split(" ")[3];
 
-                linkCommentList.add(new ArticleCommentsModel(cmt_link, cmt_content, cmt_nick, cmt_recommend, cmt_datetime));
+                linkCommentList.add(new ArticleCommentsModel(cmt_link, content_txt, cmt_nick, cmt_recommend, cmt_datetime));
             }
 
             /*
