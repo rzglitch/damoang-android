@@ -55,7 +55,8 @@ public class MainActivity extends AppCompatActivity {
 
     private String cfClearance;
     private Boolean isLoadMore;
-    private int loadedPage = 1;
+    private int currentPage = 1;
+    private boolean isRefresh = false;
 
     private ActivityResultLauncher<Intent> startActivityResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -138,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                isRefresh = true;
                 subscribeObservable();
             }
         });
@@ -269,6 +271,7 @@ public class MainActivity extends AppCompatActivity {
                     mAdapter.notifyDataSetChanged();
                     isLoadMore = false;
                 }
+                isRefresh = false;
             });
     }
 
@@ -279,7 +282,11 @@ public class MainActivity extends AppCompatActivity {
             String savedUa = preferences.getString("currentUserAgent", "");
 
             if (isLoadMore) {
-                loadedPage++;
+                currentPage++;
+            }
+
+            if (isRefresh) {
+                currentPage = 1;
             }
 
             Log.d("UserAgent", savedUa);
@@ -290,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             mArticlesList = new ArticlesList();
-            mArticlesList.getList("free", savedUa, savedClearance, loadedPage);
+            mArticlesList.getList("free", savedUa, savedClearance, currentPage);
 
             return mArticlesList;
         });
