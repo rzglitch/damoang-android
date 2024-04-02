@@ -22,12 +22,12 @@ import java.util.Objects;
 public class ArticlesList {
     public List<ArticleListModel> links;
 
-    public void getList(String boardName, String savedUa, String cfClearance, int page) {
+    public void getList(String boardUrl, String savedUa, String cfClearance, int page) {
         List<ArticleListModel> linkList = new ArrayList<>();
 
         try {
             String ua = savedUa;
-            String URL = "https://damoang.net/" + boardName + "?page=" + page;
+            String URL = boardUrl + "?page=" + page;
 
             Log.d(TAG, "CF clearance = "+cfClearance);
             Connection.Response conn = Jsoup.connect(URL)
