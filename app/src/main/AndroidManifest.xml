@@ -15,6 +15,9 @@
         android:theme="@style/Theme.Damoang"
         tools:targetApi="31">
         <activity
+            android:name=".ViewImageActivity"
+            android:exported="false" />
+        <activity
             android:name=".ViewArticleActivity"
             android:exported="false" />
         <activity

@@ -1,11 +1,16 @@
 package com.eekm.damoang;
 
+import static android.app.PendingIntent.getActivity;
+import static android.content.ContentValues.TAG;
+import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -13,11 +18,16 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
@@ -76,6 +86,8 @@ public class ViewArticleActivity extends AppCompatActivity {
         mAdapter = new ArticleCommentsAdapter(mCommentDatas);
         mCommentRecyclerView.setAdapter(mAdapter);
         mCommentRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mCommentRecyclerView.addItemDecoration(
+                new DividerItemDecoration(this, VERTICAL));
 
         if (savedInstanceState != null) {
             mCommentDatas = savedInstanceState.getParcelableArrayList("mCommentDatas");
@@ -115,6 +127,8 @@ public class ViewArticleActivity extends AppCompatActivity {
 
         webView.getSettings().setDomStorageEnabled(true);
         webView.setBackgroundColor(Color.TRANSPARENT);
+
+        webView.addJavascriptInterface(new ViewImageInterface(this), "viewImage");
 
         ConstraintLayout constraintLayout = (ConstraintLayout) findViewById(R.id.c_view_title_bar);
         constraintLayout.setVisibility(View.INVISIBLE);
@@ -156,10 +170,11 @@ public class ViewArticleActivity extends AppCompatActivity {
                                 "<title>View document</title>\n" +
                                 "<style>\n" +
                                 "* {\n" +
-                                "    font-size: 14px;\n" +
+                                "    font-size: 16px !important;\n" +
                                 "}\n" +
                                 "img {\n" +
                                 "    max-width: 100%;\n" +
+                                "    height: auto;\n" +
                                 "}\n" +
                                 "video, audio {\n" +
                                 "    max-width: 100%;\n" +
@@ -170,6 +185,19 @@ public class ViewArticleActivity extends AppCompatActivity {
                                 "</style>" +
                                 "</head>\n" +
                                 "<body style=\"padding: 8px\">" + content + "</body>\n" +
+                                "<script type=\"text/javascript\">\n" +
+                                "(function() {\n" +
+                                "    var imgs = document.querySelectorAll('img');\n" +
+                                "    for (var i = 0; i < imgs.length; i++) {\n" +
+                                "        imgs[i].setAttribute('onclick','dGetImage(this.getAttribute(\"src\"))');\n" +
+                                "    }\n" +
+                                "\n" +
+                                "})();\n" +
+                                "\n" +
+                                "function dGetImage(src) {\n" +
+                                "    viewImage.getImageSrc(src);\n" +
+                                "}\n" +
+                                "</script>" +
                                 "</html>";
 
                         webView.loadData(htmlData, "text/html; charset=utf-8", "UTF-8");

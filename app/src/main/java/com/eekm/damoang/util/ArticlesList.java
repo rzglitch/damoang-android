@@ -47,7 +47,7 @@ public class ArticlesList {
                     Elements num = list.get(i).select(".orangered");
 
                     if (!num.isEmpty()) {
-                        if (Objects.equals(num.get(0).text(), "공지")) {
+                        if (Objects.equals(num.get(0).text().trim(), "공지")) {
                             continue;
                         }
                     }

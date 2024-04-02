@@ -1,5 +1,7 @@
 package com.eekm.damoang;
 
+import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,6 +29,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -114,6 +117,9 @@ public class MainActivity extends AppCompatActivity {
         });
         mPostRecyclerView.setAdapter(mAdapter);
         mPostRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        mPostRecyclerView.addItemDecoration(
+                new DividerItemDecoration(this, VERTICAL));
 
         if (savedInstanceState != null) {
             mDatas = savedInstanceState.getParcelableArrayList("mDatas");
