@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -53,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private String cfClearance;
+    private Boolean isLoadMore;
+    private int loadedPage = 1;
 
     private ActivityResultLauncher<Intent> startActivityResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -138,6 +141,10 @@ public class MainActivity extends AppCompatActivity {
                 subscribeObservable();
             }
         });
+
+        isLoadMore = false;
+
+        initScrollListener();
     }
 
     public void adaptRecyclerView() {
@@ -187,13 +194,50 @@ public class MainActivity extends AppCompatActivity {
         Log.d("Restored", mDatas.toString());
     }
 
+    private void initScrollListener() {
+        mPostRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                LinearLayoutManager layoutManager =
+                        (LinearLayoutManager) recyclerView.getLayoutManager();
+
+                if (!isLoadMore) {
+                    if (
+                            layoutManager != null &&
+                            layoutManager.findLastCompletelyVisibleItemPosition() ==
+                                    mDatas.size() - 1) {
+                        // Scrolled last item
+                        loadMore();
+                        isLoadMore = true;
+                    }
+                }
+            }
+        });
+    }
+
+    private void loadMore() {
+        Log.d("test", "load more!");
+
+        isLoadMore = true;
+        subscribeObservable();
+    }
+
     @SuppressLint("CheckResult")
     public void subscribeObservable() {
         getDamoangData().subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe((result) -> {
                 if (!result.links.isEmpty()) {
-                    mDatas = new ArrayList<>();
+                    if (!isLoadMore) {
+                        mDatas = new ArrayList<>();
+                    }
                     for (int i = 1; i < result.links.size(); i++) {
                         ArticleListModel item = result.links.get(i);
                         String link = item.getDoc_id();
@@ -214,11 +258,17 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "서버에 오류가 발생했습니다.",
                             Toast.LENGTH_SHORT).show();
 
-                    Intent intent = new Intent(MainActivity.this, CfChallengeActivity.class);
+                    Intent intent = new Intent(
+                            MainActivity.this, CfChallengeActivity.class);
                     startActivityResult.launch(intent);
                 }
-
-                adaptRecyclerView();
+                if (!isLoadMore) {
+                    adaptRecyclerView();
+                }
+                if (isLoadMore) {
+                    mAdapter.notifyDataSetChanged();
+                    isLoadMore = false;
+                }
             });
     }
 
@@ -228,14 +278,19 @@ public class MainActivity extends AppCompatActivity {
             String savedClearance = preferences.getString("cfClearance", "");
             String savedUa = preferences.getString("currentUserAgent", "");
 
+            if (isLoadMore) {
+                loadedPage++;
+            }
+
             Log.d("UserAgent", savedUa);
 
             if (savedUa == "") {
-                savedUa = "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Damoang/1.0";
+                savedUa = "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, " +
+                        "like Gecko) Damoang/1.0";
             }
 
             mArticlesList = new ArticlesList();
-            mArticlesList.getList("", savedUa, savedClearance);
+            mArticlesList.getList("free", savedUa, savedClearance, loadedPage);
 
             return mArticlesList;
         });
