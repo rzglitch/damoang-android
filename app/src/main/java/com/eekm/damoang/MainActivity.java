@@ -186,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList("mDatas", mDatas);
+        outState.putInt("currentPage", currentPage);
         Log.d("Saved", mDatas.toString());
     }
 
@@ -193,7 +194,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         mDatas = savedInstanceState.getParcelableArrayList("mDatas");
+        currentPage = savedInstanceState.getInt("currentPage");
         Log.d("Restored", mDatas.toString());
+
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.pv_load_list);
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
     private void initScrollListener() {
