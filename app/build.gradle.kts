@@ -14,6 +14,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        ndk {
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+        }
     }
 
     buildTypes {
@@ -42,7 +45,8 @@ dependencies {
     implementation("androidx.navigation:navigation-ui:2.5.3")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation("org.jsoup:jsoup:1.17.2")
-    implementation("com.eclipsesource.j2v8:j2v8_android:3.0.5@aar")
+    implementation("com.nostra13.universalimageloader:universal-image-loader:1.9.5")
+    implementation("com.github.bumptech.glide:glide:4.14.2")
     implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
     // Because RxAndroid releases are few and far between, it is recommended you also
     // explicitly depend on RxJava's latest version for bug fixes and new features.

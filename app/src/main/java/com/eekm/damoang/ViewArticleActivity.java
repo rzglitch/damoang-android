@@ -4,6 +4,8 @@ import static android.app.PendingIntent.getActivity;
 import static android.content.ContentValues.TAG;
 import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
 
+import static java.security.AccessController.getContext;
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -16,8 +18,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -163,6 +167,15 @@ public class ViewArticleActivity extends AppCompatActivity {
                         ConstraintLayout constraintLayout = (ConstraintLayout) findViewById(R.id.c_view_title_bar);
                         constraintLayout.setVisibility(View.VISIBLE);
 
+                        String nightCss = "#000";
+
+                        int nightMode =
+                                getResources().getConfiguration().uiMode &
+                                        Configuration.UI_MODE_NIGHT_MASK;
+                        if (nightMode == Configuration.UI_MODE_NIGHT_YES) {
+                            nightCss = "#ccc";
+                        }
+
                         String htmlData = "<!DOCTYPE html>\n" +
                                 "<html>\n" +
                                 "<head>\n" +
@@ -199,6 +212,17 @@ public class ViewArticleActivity extends AppCompatActivity {
                                 "}\n" +
                                 "</script>" +
                                 "</html>";
+
+                        Log.d(TAG, htmlData);
+
+                        String finalNightCss = nightCss;
+                        webView.setWebViewClient(new WebViewClient() {
+                            public void onPageFinished(WebView view, String url) {
+                                webView.loadUrl(
+                                        "javascript:document.body.style.setProperty(\"color\", \"" + finalNightCss + "\");"
+                                );
+                            }
+                        });
 
                         webView.loadData(htmlData, "text/html; charset=utf-8", "UTF-8");
 

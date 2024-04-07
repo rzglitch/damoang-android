@@ -25,6 +25,7 @@ import com.eekm.damoang.util.BoardsList;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
@@ -113,7 +114,13 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "pos: " + pos +
                         ", data: " + item.getBoard_url(), Toast.LENGTH_SHORT).show();
 
-                Intent intent = new Intent(MainActivity.this, DocListActivity.class);
+                Intent intent;
+
+                if (Objects.equals(item.getBoard_url(), "https://damoang.net/gallery")) {
+                    intent = new Intent(MainActivity.this, GalleryListActivity.class);
+                } else {
+                    intent = new Intent(MainActivity.this, DocListActivity.class);
+                }
                 intent.putExtra("board_url", item.getBoard_url());
                 intent.putExtra("board_name", item.getBoard_name());
                 MainActivity.this.startActivity(intent);
