@@ -47,6 +47,7 @@ import com.eekm.damoang.util.ArticleComments;
 import com.eekm.damoang.util.ArticleView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.annotations.NonNull;
@@ -64,6 +65,19 @@ public class ViewArticleActivity extends AppCompatActivity {
     private ArticleComments mArticleComments;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private String cfClearance;
+
+    private String doc_title = "";
+    private String doc_views = "";
+    private String doc_nick = "";
+    private String doc_recommend = "";
+    private String doc_datetime = "";
+    private String doc_content = "";
+
+    private TextView tv_title;
+    private TextView tv_views;
+    private TextView tv_nick;
+    private TextView tv_recommend;
+    private TextView tv_datetime;
 
     private ActivityResultLauncher<Intent> startActivityResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -84,6 +98,12 @@ public class ViewArticleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_article);
 
+        tv_title = (TextView)findViewById(R.id.va_doc_title);
+        tv_views = (TextView)findViewById(R.id.va_doc_views);
+        tv_nick = (TextView)findViewById(R.id.va_doc_nickname);
+        tv_recommend = (TextView)findViewById(R.id.va_doc_recommended);
+        tv_datetime = (TextView)findViewById(R.id.va_doc_datetime);
+
         mTitleBar = findViewById(R.id.c_view_title_bar);
         mCommentRecyclerView = findViewById(R.id.rv_comments);
 
@@ -92,16 +112,6 @@ public class ViewArticleActivity extends AppCompatActivity {
         mCommentRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mCommentRecyclerView.addItemDecoration(
                 new DividerItemDecoration(this, VERTICAL));
-
-        if (savedInstanceState != null) {
-            mCommentDatas = savedInstanceState.getParcelableArrayList("mCommentDatas");
-
-            adaptRecyclerView();
-        }
-
-        if (mCommentDatas.isEmpty()) {
-            subscribeObservable();
-        }
 
         mSwipeRefreshLayout = findViewById(R.id.sr_article_view);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -134,8 +144,75 @@ public class ViewArticleActivity extends AppCompatActivity {
 
         webView.addJavascriptInterface(new ViewImageInterface(this), "viewImage");
 
+        String nightCss = "#000";
+
+        int nightMode =
+                getResources().getConfiguration().uiMode &
+                        Configuration.UI_MODE_NIGHT_MASK;
+        if (nightMode == Configuration.UI_MODE_NIGHT_YES) {
+            nightCss = "#ccc";
+        }
+
+        String finalNightCss = nightCss;
+        webView.setWebViewClient(new WebViewClient() {
+            public void onPageFinished(WebView view, String url) {
+                webView.loadUrl(
+                        "javascript:document.body.style.setProperty(\"color\", \"" + finalNightCss + "\");"
+                );
+            }
+        });
+
+        if (savedInstanceState != null) {
+            mCommentDatas = savedInstanceState.getParcelableArrayList("mCommentDatas");
+            doc_title = savedInstanceState.getString("doc_title");
+            doc_views = savedInstanceState.getString("doc_views");
+            doc_nick = savedInstanceState.getString("doc_nick");
+            doc_recommend = savedInstanceState.getString("doc_recommend");
+            doc_datetime = savedInstanceState.getString("doc_datetime");
+            doc_content = savedInstanceState.getString("doc_content");
+
+            initialDatas();
+        }
+
+        if (mCommentDatas.isEmpty()) {
+            subscribeObservable();
+        }
+
         ConstraintLayout constraintLayout = (ConstraintLayout) findViewById(R.id.c_view_title_bar);
         constraintLayout.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("mCommentDatas", mCommentDatas);
+        outState.putString("doc_title", doc_title);
+        outState.putString("doc_views", doc_views);
+        outState.putString("doc_nick", doc_nick);
+        outState.putString("doc_recommend", doc_recommend);
+        outState.putString("doc_datetime", doc_datetime);
+        outState.putString("doc_content", doc_content);
+
+        Log.d(TAG, "Saved");
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mCommentDatas = savedInstanceState.getParcelableArrayList("mCommentDatas");
+        doc_title = savedInstanceState.getString("doc_title");
+        doc_views = savedInstanceState.getString("doc_views");
+        doc_nick = savedInstanceState.getString("doc_nick");
+        doc_recommend = savedInstanceState.getString("doc_recommend");
+        doc_datetime = savedInstanceState.getString("doc_datetime");
+        doc_content = savedInstanceState.getString("doc_content");
+
+        initialDatas();
+
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.pb_view_article);
+        progressBar.setVisibility(View.INVISIBLE);
+
+        Log.d(TAG, "Restored");
     }
 
     @SuppressLint("CheckResult")
@@ -145,87 +222,15 @@ public class ViewArticleActivity extends AppCompatActivity {
                 .subscribe((result) -> {
                     if (!result.links.isEmpty()) {
                         ArticleDocModel item = result.links.get(0);
-                        String title = item.getDoc_title();
-                        String views = item.getDoc_views();
-                        String nick = item.getDoc_nickname();
-                        String recommend = item.getDoc_recommended();
-                        String datetime = item.getDoc_datetime();
-                        String content = item.getDoc_content();
+                        doc_title = item.getDoc_title();
+                        doc_views = item.getDoc_views();
+                        doc_nick = item.getDoc_nickname();
+                        doc_recommend = item.getDoc_recommended();
+                        doc_datetime = item.getDoc_datetime();
+                        doc_content = item.getDoc_content();
 
-                        TextView tv_title = (TextView)findViewById(R.id.va_doc_title);
-                        TextView tv_views = (TextView)findViewById(R.id.va_doc_views);
-                        TextView tv_nick = (TextView)findViewById(R.id.va_doc_nickname);
-                        TextView tv_recommend = (TextView)findViewById(R.id.va_doc_recommended);
-                        TextView tv_datetime = (TextView)findViewById(R.id.va_doc_datetime);
+                        initialDatas();
 
-                        tv_title.setText(title);
-                        tv_views.setText(views);
-                        tv_nick.setText(nick);
-                        tv_recommend.setText(recommend);
-                        tv_datetime.setText(datetime);
-
-                        ConstraintLayout constraintLayout = (ConstraintLayout) findViewById(R.id.c_view_title_bar);
-                        constraintLayout.setVisibility(View.VISIBLE);
-
-                        String nightCss = "#000";
-
-                        int nightMode =
-                                getResources().getConfiguration().uiMode &
-                                        Configuration.UI_MODE_NIGHT_MASK;
-                        if (nightMode == Configuration.UI_MODE_NIGHT_YES) {
-                            nightCss = "#ccc";
-                        }
-
-                        String htmlData = "<!DOCTYPE html>\n" +
-                                "<html>\n" +
-                                "<head>\n" +
-                                "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\">\n" +
-                                "<title>View document</title>\n" +
-                                "<style>\n" +
-                                "* {\n" +
-                                "    font-size: 16px !important;\n" +
-                                "}\n" +
-                                "img {\n" +
-                                "    max-width: 100%;\n" +
-                                "    height: auto;\n" +
-                                "}\n" +
-                                "video, audio {\n" +
-                                "    max-width: 100%;\n" +
-                                "}\n" +
-                                "iframe {\n" +
-                                "    max-width: 100%;\n" +
-                                "}" +
-                                "</style>" +
-                                "</head>\n" +
-                                "<body style=\"padding: 8px\">" + content + "</body>\n" +
-                                "<script type=\"text/javascript\">\n" +
-                                "(function() {\n" +
-                                "    var imgs = document.querySelectorAll('img');\n" +
-                                "    for (var i = 0; i < imgs.length; i++) {\n" +
-                                "        imgs[i].setAttribute('onclick','dGetImage(this.getAttribute(\"src\"))');\n" +
-                                "    }\n" +
-                                "\n" +
-                                "})();\n" +
-                                "\n" +
-                                "function dGetImage(src) {\n" +
-                                "    viewImage.getImageSrc(src);\n" +
-                                "}\n" +
-                                "</script>" +
-                                "</html>";
-
-                        String finalNightCss = nightCss;
-                        webView.setWebViewClient(new WebViewClient() {
-                            public void onPageFinished(WebView view, String url) {
-                                webView.loadUrl(
-                                        "javascript:document.body.style.setProperty(\"color\", \"" + finalNightCss + "\");"
-                                );
-                            }
-                        });
-
-                        webView.loadData(htmlData, "text/html; charset=utf-8", "UTF-8");
-
-
-                        mCommentDatas = new ArrayList<>();
                         for (int i = 0; i < result.comments.size(); i++) {
                             ArticleCommentsModel cmt_item = result.comments.get(i);
                             String cmt_link = cmt_item.getDoc_id();
@@ -237,17 +242,72 @@ public class ViewArticleActivity extends AppCompatActivity {
                             mCommentDatas.add(new ArticleCommentsModel(cmt_link, cmt_content, cmt_nick,
                                     cmt_recommend, cmt_datetime));
                         }
-
-                        ProgressBar progressBar = (ProgressBar) findViewById(R.id.pb_view_article);
-                        progressBar.setVisibility(View.INVISIBLE);
-                        mSwipeRefreshLayout.setRefreshing(false);
                     } else {
-                        Toast.makeText(getApplicationContext(), "서버에 오류가 발생했습니다.",
+                        Toast.makeText(getApplicationContext(),
+                                "리스트를 불러오는 도중 오류가 발생했습니다.",
                                 Toast.LENGTH_SHORT).show();
-                    }
 
-                    adaptRecyclerView();
+                        Intent intent = new Intent(
+                                ViewArticleActivity.this, CfChallengeActivity.class);
+                        startActivityResult.launch(intent);
+                    }
                 });
+    }
+
+    public void initialDatas() {
+        tv_title.setText(doc_title);
+        tv_views.setText(doc_views);
+        tv_nick.setText(doc_nick);
+        tv_recommend.setText(doc_recommend);
+        tv_datetime.setText(doc_datetime);
+
+        ConstraintLayout constraintLayout = (ConstraintLayout) findViewById(R.id.c_view_title_bar);
+        constraintLayout.setVisibility(View.VISIBLE);
+
+        String contentsHtml = "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<head>\n" +
+                "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\">\n" +
+                "<title>View document</title>\n" +
+                "<style>\n" +
+                "* {\n" +
+                "    font-size: 16px !important;\n" +
+                "}\n" +
+                "img {\n" +
+                "    max-width: 100%;\n" +
+                "    height: auto;\n" +
+                "}\n" +
+                "video, audio {\n" +
+                "    max-width: 100%;\n" +
+                "}\n" +
+                "iframe {\n" +
+                "    max-width: 100%;\n" +
+                "}" +
+                "</style>" +
+                "</head>\n" +
+                "<body style=\"padding: 8px\">" + doc_content + "</body>\n" +
+                "<script type=\"text/javascript\">\n" +
+                "(function() {\n" +
+                "    var imgs = document.querySelectorAll('img');\n" +
+                "    for (var i = 0; i < imgs.length; i++) {\n" +
+                "        imgs[i].setAttribute('onclick','dGetImage(this.getAttribute(\"src\"))');\n" +
+                "    }\n" +
+                "\n" +
+                "})();\n" +
+                "\n" +
+                "function dGetImage(src) {\n" +
+                "    viewImage.getImageSrc(src);\n" +
+                "}\n" +
+                "</script>" +
+                "</html>";
+
+        webView.loadData(contentsHtml, "text/html; charset=utf-8", "UTF-8");
+
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.pb_view_article);
+        progressBar.setVisibility(View.INVISIBLE);
+        mSwipeRefreshLayout.setRefreshing(false);
+
+        adaptRecyclerView();
     }
 
     public void adaptRecyclerView() {

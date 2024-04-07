@@ -100,18 +100,6 @@ public class DocListActivity extends AppCompatActivity {
         mPostRecyclerView = findViewById(R.id.rv_article_list);
 
         mAdapter = new ArticleListAdapter(mDatas);
-        mAdapter.setOnItemClickEventListener(new ArticleListAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int pos) {
-                final ArticleListModel item = mDatas.get(pos);
-                Toast.makeText(getApplicationContext(), "pos: " + pos +
-                        ", data: " + item.getDoc_id(), Toast.LENGTH_SHORT).show();
-
-                Intent intent = new Intent(DocListActivity.this, ViewArticleActivity.class);
-                intent.putExtra("doc_id", item.getDoc_id());
-                DocListActivity.this.startActivity(intent);
-            }
-        });
         mPostRecyclerView.setAdapter(mAdapter);
         mPostRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -148,8 +136,9 @@ public class DocListActivity extends AppCompatActivity {
             @Override
             public void onItemClick(int pos) {
                 final ArticleListModel item = mDatas.get(pos);
-                Toast.makeText(getApplicationContext(), "pos: " + pos +
+                /* Toast.makeText(getApplicationContext(), "pos: " + pos +
                         ", data: " + item.getDoc_id(), Toast.LENGTH_SHORT).show();
+                 */
 
                 Intent intent = new Intent(DocListActivity.this, ViewArticleActivity.class);
                 intent.putExtra("doc_id", item.getDoc_id());
@@ -247,7 +236,8 @@ public class DocListActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.INVISIBLE);
                     mSwipeRefreshLayout.setRefreshing(false);
                 } else {
-                    Toast.makeText(getApplicationContext(), "서버에 오류가 발생했습니다.",
+                    Toast.makeText(getApplicationContext(),
+                            "리스트를 불러오는 도중 오류가 발생했습니다.",
                             Toast.LENGTH_SHORT).show();
 
                     Intent intent = new Intent(

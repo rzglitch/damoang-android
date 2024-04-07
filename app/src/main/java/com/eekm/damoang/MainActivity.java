@@ -111,8 +111,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(int pos) {
                 final BoardsListModel item = mDatas.get(pos);
-                Toast.makeText(getApplicationContext(), "pos: " + pos +
+                /* Toast.makeText(getApplicationContext(), "pos: " + pos +
                         ", data: " + item.getBoard_url(), Toast.LENGTH_SHORT).show();
+                 */
 
                 Intent intent;
 
