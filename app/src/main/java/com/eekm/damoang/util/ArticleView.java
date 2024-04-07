@@ -62,12 +62,18 @@ public class ArticleView {
                 String cmt_content = cmt.get(i).select(".comment-content .na-convert").html();
                 String cmt_nick = cmt.get(i).select(".me-2 .member").text();
                 String cmt_datetime = cmt.get(i).select(".ms-auto").text();
-                String cmt_recommend = cmt.get(i).select(".comment-content div").get(1).text();
+
+                Elements btn_group_sel = cmt.get(i).select(".comment-content .btn-group");
+                String cmt_recommend = "0";
+
+                if (btn_group_sel.size() == 2) {
+                    cmt_recommend = btn_group_sel.get(1).text();
+                    cmt_recommend = cmt_recommend.split(" ")[1];
+                }
 
                 String content_txt = Jsoup.parse(cmt_content).wholeText();
 
                 cmt_datetime = cmt_datetime.split(" ")[1];
-                cmt_recommend = cmt_recommend.split(" ")[3];
 
                 linkCommentList.add(new ArticleCommentsModel(cmt_link, content_txt, cmt_nick, cmt_recommend, cmt_datetime));
             }

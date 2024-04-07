@@ -213,8 +213,6 @@ public class ViewArticleActivity extends AppCompatActivity {
                                 "</script>" +
                                 "</html>";
 
-                        Log.d(TAG, htmlData);
-
                         String finalNightCss = nightCss;
                         webView.setWebViewClient(new WebViewClient() {
                             public void onPageFinished(WebView view, String url) {
