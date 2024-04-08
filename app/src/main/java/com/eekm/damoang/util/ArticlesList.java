@@ -52,8 +52,9 @@ public class ArticlesList {
                         }
                     }
 
-                    String title = parseLink.text();
+                    String title = parseLink.get(0).text();
                     if (title.isEmpty()) {
+                        // 공지글
                         title = list.get(i).select("a strong").text();
                     }
                     String nick = list.get(i).select(".sv_member").text();

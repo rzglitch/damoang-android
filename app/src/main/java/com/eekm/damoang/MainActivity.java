@@ -6,6 +6,8 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -46,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(binding.appBoardListMain.toolbar);
 
+        this.invalidateOptionsMenu();
+
         mBoardsRecyclerView = findViewById(R.id.rv_boards_list);
 
         mAdapter = new BoardsListAdapter(mDatas);
@@ -82,6 +86,22 @@ public class MainActivity extends AppCompatActivity {
 
         ProgressBar progressBar = (ProgressBar) findViewById(R.id.pv_load_list);
         progressBar.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem actionLogout = (MenuItem) menu.findItem(R.id.action_logout);
+        MenuItem showUsername = (MenuItem) menu.findItem(R.id.menu_username);
+        actionLogout.setVisible(false);
+        showUsername.setVisible(false);
+
+        return true;
     }
 
     @SuppressLint("CheckResult")

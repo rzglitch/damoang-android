@@ -10,11 +10,13 @@ import com.eekm.damoang.ui.articles.ArticleDocModel;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ArticleView {
     public List<ArticleDocModel> links;
@@ -38,10 +40,20 @@ public class ArticleView {
             Document document = conn.parse();
 
             Elements list = document.select("#bo_v");
+            Elements meta_tags = document.getElementsByTag("meta");
 
             String title = list.get(0).select("#bo_v_title").text();
-            String nick = list.get(0).select("#bo_v_info .sv_member").text();
-            String datetime = list.get(0).select("#bo_v_info>div").select("span").get(3).text();
+            String nick = "";
+
+            for (Element meta : meta_tags) {
+                String meta_name = meta.attr("name");
+
+                if (Objects.equals(meta_name, "author")) {
+                    nick = meta.attr("content");
+                }
+            }
+
+            String datetime = list.get(0).select("#bo_v_info>div div").get(1).text();
             Elements doc_metadata = list.get(0).select("#bo_v_info .pe-2");
             String recommend = doc_metadata.get(doc_metadata.size()-1).text();
             String views = doc_metadata.get(0).text();
@@ -51,8 +63,10 @@ public class ArticleView {
 
             recommend = recommend.split(" ")[0];
             views = views.split(" ")[0];
+            datetime = datetime.split(" ")[1];
 
-            linkList.add(new ArticleDocModel(title, nick, recommend, views, datetime, merged_content));
+            linkList.add(new ArticleDocModel(title, nick, recommend, views,datetime,
+                    merged_content));
 
             // Comments
             Elements cmt = document.select("#bo_vc article");
@@ -60,7 +74,8 @@ public class ArticleView {
             for (int i = 0; i < cmt.size(); i++) {
                 String cmt_link = cmt.get(i).id();
                 String cmt_content = cmt.get(i).select(".comment-content .na-convert").html();
-                String cmt_nick = cmt.get(i).select(".me-2 .member").text();
+                String cmt_nick = cmt.get(i).select(".me-2 .sv_member")
+                        .attr("title");
                 String cmt_datetime = cmt.get(i).select(".ms-auto").text();
 
                 Elements btn_group_sel = cmt.get(i).select(".comment-content .btn-group");
@@ -74,6 +89,8 @@ public class ArticleView {
                 String content_txt = Jsoup.parse(cmt_content).wholeText();
 
                 cmt_datetime = cmt_datetime.split(" ")[1];
+
+                cmt_nick = cmt_nick.split(" ")[0];
 
                 linkCommentList.add(new ArticleCommentsModel(cmt_link, content_txt, cmt_nick, cmt_recommend, cmt_datetime));
             }
