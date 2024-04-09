@@ -106,7 +106,7 @@ public class LoginDamoangActivity extends AppCompatActivity {
             }
         });
 
-        webView.loadUrl("https://damoang.net/free/135777#memberOffcanvas");
+        webView.loadUrl("https://damoang.net/bbs/login.php");
     }
 
     public String getCookie(String siteName, String cookieName){

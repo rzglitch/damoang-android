@@ -1,9 +1,11 @@
 package com.eekm.damoang;
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -23,6 +25,7 @@ import com.eekm.damoang.ui.articles.ArticleListAdapter;
 import com.eekm.damoang.ui.articles.ArticleListModel;
 import com.eekm.damoang.ui.boards.BoardsListAdapter;
 import com.eekm.damoang.ui.boards.BoardsListModel;
+import com.eekm.damoang.util.ArticleParser;
 import com.eekm.damoang.util.BoardsList;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -64,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
             mDatas = savedInstanceState.getParcelableArrayList("boardsList");
 
             adaptRecyclerView();
+        } else {
+            subscribeParseRulesSingle();
         }
 
         if (mDatas.isEmpty()) {
@@ -125,6 +130,28 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    @SuppressLint("CheckResult")
+    public void subscribeParseRulesSingle() {
+        getDamoangParserRules().subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((result) -> {
+                    SharedPreferences preferences = getSharedPreferences("LocalPref", MODE_PRIVATE);
+                    String savedParseRules = preferences.getString("damoangParseRules", "");
+
+                    if (savedParseRules.isEmpty()) {
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putString("damoangParseRules", result.getJsonResult());
+                        editor.apply();
+                    } else if (result.isRulesOutdated(savedParseRules)) {
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putString("damoangParseRules", result.getJsonResult());
+                        editor.apply();
+
+                        Log.d(TAG, "Updated outdated rules");
+                    }
+                });
+    }
+
     public void adaptRecyclerView() {
         mAdapter = new BoardsListAdapter(mDatas);
         mAdapter.setOnItemClickEventListener(new BoardsListAdapter.OnItemClickListener() {
@@ -160,6 +187,16 @@ public class MainActivity extends AppCompatActivity {
             mBoardsList.getBoardsList();
 
             return mBoardsList;
+        });
+    }
+
+    public Single<ArticleParser> getDamoangParserRules() {
+        return Single.fromCallable(() -> {
+            // 파서 룰 정의 파일을 받아옵니다
+            ArticleParser parser = new ArticleParser();
+            parser.getParserData();
+
+            return parser;
         });
     }
 }

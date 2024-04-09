@@ -41,9 +41,7 @@ import android.widget.Toast;
 import com.eekm.damoang.ui.articles.ArticleCommentsAdapter;
 import com.eekm.damoang.ui.articles.ArticleCommentsModel;
 import com.eekm.damoang.ui.articles.ArticleDocModel;
-import com.eekm.damoang.ui.articles.ArticleListAdapter;
-import com.eekm.damoang.ui.articles.ArticleListModel;
-import com.eekm.damoang.util.ArticleComments;
+import com.eekm.damoang.util.ArticleParser;
 import com.eekm.damoang.util.ArticleView;
 
 import java.util.ArrayList;
@@ -62,7 +60,6 @@ public class ViewArticleActivity extends AppCompatActivity {
     private ArticleCommentsAdapter mAdapter;
     private ArrayList<ArticleCommentsModel> mCommentDatas = new ArrayList<>();
     private ArticleView mArticleView;
-    private ArticleComments mArticleComments;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private String cfClearance;
 
@@ -321,20 +318,32 @@ public class ViewArticleActivity extends AppCompatActivity {
             SharedPreferences preferences = getSharedPreferences("LocalPref", MODE_PRIVATE);
             String savedClearance = preferences.getString("cfClearance", "");
             String savedUa = preferences.getString("currentUserAgent", "");
+            String savedParseRules = preferences.getString("damoangParseRules", "");
 
             Log.d("UserAgent", savedUa);
             Log.d("Clearance", savedClearance);
 
-            if (savedUa == "") {
+            if (savedUa.isEmpty()) {
                 savedUa = "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Damoang/1.0";
+            }
+
+            if (savedParseRules.isEmpty()) {
+                ArticleParser parser = new ArticleParser();
+
+                String parserData = parser.getParserData();
+
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("damoangParseRules", parserData);
+                editor.apply();
+
+                savedParseRules = parserData;
             }
 
             Intent intent = getIntent();
             String doc_id = intent.getStringExtra("doc_id");
 
-            Log.d("get", doc_id);
-
             mArticleView = new ArticleView();
+            mArticleView.setSavedParseRules(savedParseRules);
             mArticleView.getView(doc_id, savedUa, savedClearance);
 
             return mArticleView;

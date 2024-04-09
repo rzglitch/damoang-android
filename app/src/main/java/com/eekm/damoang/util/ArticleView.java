@@ -21,6 +21,11 @@ import java.util.Objects;
 public class ArticleView {
     public List<ArticleDocModel> links;
     public List<ArticleCommentsModel> comments;
+    private String savedParseRules = null;
+
+    public void setSavedParseRules(String savedParseRules) {
+        this.savedParseRules = savedParseRules;
+    }
 
     public void getView(String doc_id, String savedUa, String cfClearance) {
         List<ArticleDocModel> linkList = new ArrayList<>();
@@ -42,7 +47,13 @@ public class ArticleView {
             Elements list = document.select("#bo_v");
             Elements meta_tags = document.getElementsByTag("meta");
 
-            String title = list.get(0).select("#bo_v_title").text();
+            ArticleParser parser = new ArticleParser();
+
+            parser.setJsonResult(savedParseRules);
+            parser.setDocument(document);
+            parser.setViewType("parseArticleView");
+
+            String title = parser.parseArticleString("title");
             String nick = "";
 
             for (Element meta : meta_tags) {
@@ -53,7 +64,7 @@ public class ArticleView {
                 }
             }
 
-            String datetime = list.get(0).select("#bo_v_info>div div").get(1).text();
+            String datetime = parser.parseArticleString("datetime");
             Elements doc_metadata = list.get(0).select("#bo_v_info .pe-2");
             String recommend = doc_metadata.get(doc_metadata.size()-1).text();
             String views = doc_metadata.get(0).text();
