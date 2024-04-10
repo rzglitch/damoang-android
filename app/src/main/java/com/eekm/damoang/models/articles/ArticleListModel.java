@@ -1,8 +1,7 @@
-package com.eekm.damoang.ui.articles;
+package com.eekm.damoang.models.articles;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 

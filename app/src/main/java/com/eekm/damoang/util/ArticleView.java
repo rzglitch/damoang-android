@@ -4,8 +4,8 @@ import static android.content.ContentValues.TAG;
 
 import android.util.Log;
 
-import com.eekm.damoang.ui.articles.ArticleCommentsModel;
-import com.eekm.damoang.ui.articles.ArticleDocModel;
+import com.eekm.damoang.models.articles.ArticleCommentsModel;
+import com.eekm.damoang.models.articles.ArticleDocModel;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -69,19 +69,18 @@ public class ArticleView {
             String recommend = doc_metadata.get(doc_metadata.size()-1).text();
             String views = doc_metadata.get(0).text();
             String content_img = list.get(0).select("#bo_v_img").get(0).toString();
-            String content = list.get(0).select("#bo_v_con.na-convert").get(0).toString();
+            String content = list.get(0).select("#bo_v_con.na-convert").get(0).html();
             String merged_content = content_img + "\n" + content;
 
             recommend = recommend.split(" ")[0];
             views = views.split(" ")[0];
-            datetime = datetime.split(" ")[1];
+            // datetime = datetime.split(" ")[1];
 
             linkList.add(new ArticleDocModel(title, nick, recommend, views,datetime,
                     merged_content));
 
             // Comments
             Elements cmt = document.select("#bo_vc article");
-            Log.d("commentList", "size: " + cmt.size());
             for (int i = 0; i < cmt.size(); i++) {
                 String cmt_link = cmt.get(i).id();
                 String cmt_content = cmt.get(i).select(".comment-content .na-convert").html();
@@ -105,39 +104,6 @@ public class ArticleView {
 
                 linkCommentList.add(new ArticleCommentsModel(cmt_link, content_txt, cmt_nick, cmt_recommend, cmt_datetime));
             }
-
-            /*
-            Elements list = document.select("#bo_v");
-
-            String title = list.get(0).select("#bo_v_title").text();
-            String nick = list.get(0).select("#bo_v_info .sv_member").text();
-            String datetime = list.get(0).select("#bo_v_info div").
-                    get(0).select("div").get(1).text();
-            //String recommend = list.get(0).select("#bo_v_info div").get(1).select("div").get(2).text();
-            String recommend = "dgdgdfg";
-            String views = list.get(0).select("#bo_v_info div").
-                    get(1).select("div").get(0).text();
-            String content = list.get(0).select("#bo_v_con").text();
-
-            datetime = datetime.split(" ")[0];
-            recommend = recommend.split(" ")[0];
-            views = views.split(" ")[0];
-
-            linkList.add(new ArticleDocModel(title, nick, recommend, views, datetime, content));
-
-            // Comments
-            Elements cmt = document.select("#bo_vc");
-            for (int i = 0; i < cmt.size(); i++) {
-                String cmt_link = cmt.get(i).id();
-                String cmt_content = cmt.get(i).select(".comment-content .na-convert").text();
-                String cmt_nick = cmt.get(i).select(".me-2 .member").text();
-                String cmt_datetime = cmt.get(i).select(".ms-auto").text();
-                String cmt_recommend = cmt.get(i).select(".comment-content div").get(1).text();
-
-                linkCommentList.add(new ArticleCommentsModel(cmt_link, cmt_content, cmt_nick, cmt_recommend, cmt_datetime));
-            }
-
-             */
         } catch (IOException e) {
             e.printStackTrace();
         }

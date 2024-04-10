@@ -1,4 +1,4 @@
-package com.eekm.damoang.ui.boards;
+package com.eekm.damoang.models.boards;
 
 import android.view.View;
 import android.widget.TextView;

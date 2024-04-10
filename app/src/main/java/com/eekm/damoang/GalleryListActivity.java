@@ -25,17 +25,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.eekm.damoang.databinding.ActivityGalleryListBinding;
-import com.eekm.damoang.ui.articles.GalleryListAdapter;
-import com.eekm.damoang.ui.articles.GalleryListModel;
+import com.eekm.damoang.models.gallery.GalleryListAdapter;
+import com.eekm.damoang.models.gallery.GalleryListModel;
 import com.eekm.damoang.util.GalleriesList;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class GalleryListActivity extends AppCompatActivity {
@@ -156,7 +154,7 @@ public class GalleryListActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList("mDatas", mDatas);
         outState.putInt("currentPage", currentPage);
-        Log.d("Saved", mDatas.toString());
+        Log.d("Saved", "mDatas: " + mDatas + "\ncurrentPage: " + currentPage);
     }
 
     @Override
@@ -164,7 +162,7 @@ public class GalleryListActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
         mDatas = savedInstanceState.getParcelableArrayList("mDatas");
         currentPage = savedInstanceState.getInt("currentPage");
-        Log.d("Restored", mDatas.toString());
+        Log.d("Restored", "mDatas: " + mDatas + "\ncurrentPage: " + currentPage);
 
         ProgressBar progressBar = (ProgressBar) findViewById(R.id.pv_load_list);
         progressBar.setVisibility(View.INVISIBLE);
@@ -200,7 +198,7 @@ public class GalleryListActivity extends AppCompatActivity {
     }
 
     private void loadMore() {
-        Log.d("test", "load more!");
+        Log.d("loadMore", "load next list!");
 
         isLoadMore = true;
         subscribeObservable();

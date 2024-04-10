@@ -4,8 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import android.util.Log;
 
-import com.eekm.damoang.ui.articles.ArticleListModel;
-import com.eekm.damoang.ui.articles.GalleryListModel;
+import com.eekm.damoang.models.gallery.GalleryListModel;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -15,10 +14,15 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class GalleriesList {
     public List<GalleryListModel> links;
+
+    private String savedParseRules = null;
+
+    public void setSavedParseRules(String savedParseRules) {
+        this.savedParseRules = savedParseRules;
+    }
 
     public void getList(String boardUrl, String savedUa, String cfClearance, int page) {
         List<GalleryListModel> linkList = new ArrayList<>();
@@ -36,6 +40,12 @@ public class GalleriesList {
 
 
             Elements list = document.select("#bo_list .row .col");
+
+            ArticleParser parser = new ArticleParser();
+
+            parser.setJsonResult(savedParseRules);
+            parser.setDocument(document);
+            parser.setViewType("parseArticleView");
 
             for (int i = 0; i < list.size(); i++) {
                 Elements parseLink = list.get(i).select(".card-title a");

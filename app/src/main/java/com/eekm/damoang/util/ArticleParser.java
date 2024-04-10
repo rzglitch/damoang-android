@@ -1,9 +1,6 @@
 package com.eekm.damoang.util;
 
-import android.content.SharedPreferences;
 import android.util.Log;
-
-import com.eekm.damoang.ui.boards.BoardsListModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,13 +14,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ArticleParser {
     public String jsonResult = null;
     private Document document = null;
     private String viewType = null;
+    private Elements parent_el = null;
+    private Element parent_el_one = null;
+
+    private Elements processed_el = null;
+    private Element processed_el_one = null;
 
     public void setDocument(Document document) {
         this.document = document;
@@ -33,6 +33,18 @@ public class ArticleParser {
     }
     public void setJsonResult(String jsonResult) {
         this.jsonResult = jsonResult;
+    }
+    public void setParent_el(Elements parent_el) {
+        this.parent_el = parent_el;
+    }
+    public void setParent_el_one(Element parent_el_one) {
+        this.parent_el_one = parent_el_one;
+    }
+    public void clearProcess() {
+        this.parent_el = null;
+        this.parent_el_one = null;
+        this.processed_el = null;
+        this.processed_el_one = null;
     }
 
     public String getJsonResult() {
@@ -45,7 +57,7 @@ public class ArticleParser {
 
         Log.d("getParserData", "get a new parser rules data.");
         try {
-            String url_text = "https://dkh1.mycafe24.com/damoangdroid/damoangParser.json";
+            String url_text = "https://dkh1.mycafe24.com/damoangdroid/damoangParserTest.json";
             URL url = new URL(url_text);
             connection = (HttpURLConnection) url.openConnection();
             connection.connect();
@@ -136,12 +148,12 @@ public class ArticleParser {
                 String selFunc = listObject.getString("f");
 
                 if (selFunc.equals("select")) {
-                    JSONArray selParam = listObject.getJSONArray("param");
+                    String selCss = listObject.getString("css");
 
                     if (result == null) {
-                        result = document.select(selParam.getString(0));
+                        result = document.select(selCss);
                     } else {
-                        result = result.select(selParam.getString(0));
+                        result = result.select(selCss);
                     }
                 }
             }
@@ -154,12 +166,53 @@ public class ArticleParser {
         return null;
     }
 
-    public String parseArticleString(String itemName) {
-        String result = null;
-        Elements parent_el = parseArticleViewParent();
-        Elements processed_el = null;
-        String processed_str = null;
-        Element processed_el_one = null;
+    private void select(String sel) {
+        if (processed_el_one == null) {
+            if (processed_el == null) {
+                // 처음에는 parent_el에서 선택합니다.
+                if (parent_el_one != null)
+                    processed_el = parent_el_one.select(sel);
+                else
+                    processed_el = parent_el.select(sel);
+            } else {
+                // processed_el이 null이 아니면 processed_el에서 선택합니다.
+                processed_el = processed_el.select(sel);
+            }
+        } else {
+            // processed_el_one에 객체가 존재한다면
+            // select 후  processed_el로 돌려준다.
+            processed_el = processed_el_one.select(sel);
+            processed_el_one = null;
+        }
+    }
+
+    private void get(int idx) throws JSONException {
+        if (parent_el_one != null)
+            throw new JSONException("Cannot use `get()` on Element.");
+
+        if (processed_el == null) {
+            // 처음에는 parent_el에서 선택합니다.
+            processed_el_one = parent_el.get(idx);
+        } else {
+            // processed_el에 객체가 존재한다면 processed_el에서 선택합니다.
+            processed_el_one = processed_el.get(idx);
+            processed_el = null;
+        }
+    }
+
+    private String split(String regex, int idx) {
+        if (processed_el_one == null) {
+            return processed_el.text().split(regex)[idx];
+        } else {
+            return processed_el_one.text().split(regex)[idx];
+        }
+    }
+
+    public Elements parseArticleElements(String itemName) {
+        Elements result = null;
+
+        if (parent_el == null && parent_el_one == null)
+            parent_el = parseArticleViewParent();
 
         try {
             JSONObject avo = getArticleViewObject();
@@ -170,23 +223,79 @@ public class ArticleParser {
                 String selFunc = listObject.getString("f");
 
                 if (selFunc.equals("select")) {
-                    JSONArray selParam = listObject.getJSONArray("param");
-
-                    if (processed_el_one == null) {
-                        if (processed_el == null) {
-                            // 처음에는 parent_el에서 선택합니다.
-                            processed_el = parent_el.select(selParam.getString(0));
-                        } else {
-                            // processed_el이 null이 아니면 processed_el에서 선택합니다.
-                            processed_el = processed_el.select(selParam.getString(0));
-                        }
-                    } else {
-                        // processed_el_one에 객체가 존재한다면
-                        // select 후  processed_el로 돌려준다.
-                        processed_el = processed_el_one.select(selParam.getString(0));
-                        processed_el_one = null;
-                    }
+                    String selCss = listObject.getString("css");
+                    select(selCss);
                 }
+
+                if (selFunc.equals("get")) {
+                    int getIndex = listObject.getInt("idx");
+                    get(getIndex);
+                }
+            }
+
+            result = processed_el;
+
+            clearProcess();
+
+            return result;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public Element parseArticleElement(String itemName) {
+        Element result = null;
+
+        if (parent_el == null && parent_el_one == null)
+            parent_el = parseArticleViewParent();
+
+        try {
+            JSONObject avo = getArticleViewObject();
+            JSONArray listArray = avo.getJSONArray(itemName);
+
+            for (int i = 0; i < listArray.length(); i++) {
+                JSONObject listObject = listArray.getJSONObject(i);
+                String selFunc = listObject.getString("f");
+
+                if (selFunc.equals("select")) {
+                    String selCss = listObject.getString("css");
+                    select(selCss);
+                }
+
+                if (selFunc.equals("get")) {
+                    int getIndex = listObject.getInt("idx");
+                    get(getIndex);
+                }
+            }
+
+            result = processed_el_one;
+
+            clearProcess();
+
+            return result;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public String parseArticleString(String itemName) {
+        String result = null;
+        String processed_str = null;
+
+        if (parent_el == null && parent_el_one == null)
+            parent_el = parseArticleViewParent();
+
+        try {
+            JSONObject avo = getArticleViewObject();
+            JSONArray listArray = avo.getJSONArray(itemName);
+
+            for (int i = 0; i < listArray.length(); i++) {
+                JSONObject listObject = listArray.getJSONObject(i);
+                String selFunc = listObject.getString("f");
 
                 if (selFunc.equals("attr")) {
                     String getAttrVal = listObject.getString("name");
@@ -194,7 +303,10 @@ public class ArticleParser {
                     if (processed_el_one == null) {
                         if (processed_el == null) {
                             // 처음에는 parent_el에서 선택합니다.
-                            processed_str = parent_el.attr(getAttrVal);
+                            if (parent_el_one != null)
+                                processed_str = parent_el_one.attr(getAttrVal);
+                            else
+                                processed_str = parent_el.attr(getAttrVal);
                         } else {
                             // processed_el이 null이 아니면 processed_el에서 선택합니다.
                             processed_str = processed_el.attr(getAttrVal);
@@ -204,21 +316,26 @@ public class ArticleParser {
                         // processed_el_one에서 선택합니다.
                         processed_str = processed_el_one.attr(getAttrVal);
                     }
-                    // return String
-                    return processed_str;
+
+                    break;
+                }
+
+                if (selFunc.equals("select")) {
+                    String selCss = listObject.getString("css");
+                    select(selCss);
                 }
 
                 if (selFunc.equals("get")) {
                     int getIndex = listObject.getInt("idx");
+                    get(getIndex);
+                }
 
-                    if (processed_el == null) {
-                        // 처음에는 parent_el에서 선택합니다.
-                        processed_el_one = parent_el.get(getIndex);
-                    } else {
-                        // processed_el에 객체가 존재한다면 processed_el에서 선택합니다.
-                        processed_el_one = processed_el.get(getIndex);
-                        processed_el = null;
-                    }
+                if (selFunc.equals("split")) {
+                    String getRegex = listObject.getString("r");
+                    int getIndex = listObject.getInt("idx");
+                    processed_str = split(getRegex, getIndex);
+
+                    break;
                 }
             }
 
@@ -227,7 +344,13 @@ public class ArticleParser {
             else
                 result = processed_el.text();
 
-            return result;
+            if (processed_str != null) {
+                clearProcess();
+                return processed_str;
+            } else {
+                clearProcess();
+                return result;
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

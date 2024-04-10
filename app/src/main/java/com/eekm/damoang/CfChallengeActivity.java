@@ -5,11 +5,9 @@ import static android.content.ContentValues.TAG;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.webkit.CookieManager;
-import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -45,13 +43,10 @@ public class CfChallengeActivity extends AppCompatActivity {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
-
-                Log.d("WebView", "your current url when webpage loading.." + url);
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                Log.d("WebView", "your current url when webpage loading.. finish" + url);
                 super.onPageFinished(view, url);
 
                 String cfClearance = getCookie(url, "cf_clearance");

@@ -1,18 +1,12 @@
 package com.eekm.damoang.util;
 
-import static android.content.ContentValues.TAG;
-
-import android.util.Log;
-
-import com.eekm.damoang.ui.articles.ArticleListModel;
-import com.eekm.damoang.ui.boards.BoardsListModel;
+import com.eekm.damoang.models.boards.BoardsListModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;

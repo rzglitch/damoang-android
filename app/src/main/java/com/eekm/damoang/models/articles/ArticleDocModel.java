@@ -1,52 +1,55 @@
-package com.eekm.damoang.ui.articles;
+package com.eekm.damoang.models.articles;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-public class ArticleCommentsModel implements Parcelable {
-    private String doc_content;
+public class ArticleDocModel implements Parcelable {
+    private String doc_title;
     private String doc_nickname;
     private String doc_recommended;
+    private String doc_views;
     private String doc_datetime;
-    private String doc_id;
+    private String doc_content;
 
-    public ArticleCommentsModel(String doc_id, String doc_content, String doc_nickname,
-                                String doc_recommended, String doc_datetime) {
-        this.doc_content = doc_content;
+    public ArticleDocModel(String doc_title, String doc_nickname, String doc_recommended,
+                            String doc_views, String doc_datetime, String doc_content) {
+        this.doc_title = doc_title;
         this.doc_nickname = doc_nickname;
         this.doc_recommended = doc_recommended;
+        this.doc_views = doc_views;
         this.doc_datetime = doc_datetime;
-        this.doc_id = doc_id;
+        this.doc_content = doc_content;
     }
 
-    protected ArticleCommentsModel(Parcel in) {
-        doc_content = in.readString();
+    protected ArticleDocModel(Parcel in) {
+        doc_title = in.readString();
         doc_nickname = in.readString();
         doc_recommended = in.readString();
+        doc_views = in.readString();
         doc_datetime = in.readString();
-        doc_id = in.readString();
+        doc_content = in.readString();
     }
 
-    public static final Parcelable.Creator<ArticleCommentsModel> CREATOR = new Parcelable.Creator<ArticleCommentsModel>() {
+    public static final Parcelable.Creator<ArticleDocModel> CREATOR = new Parcelable.Creator<ArticleDocModel>() {
         @Override
-        public ArticleCommentsModel createFromParcel(Parcel in) {
-            return new ArticleCommentsModel(in);
+        public ArticleDocModel createFromParcel(Parcel in) {
+            return new ArticleDocModel(in);
         }
 
         @Override
-        public ArticleCommentsModel[] newArray(int size) {
-            return new ArticleCommentsModel[size];
+        public ArticleDocModel[] newArray(int size) {
+            return new ArticleDocModel[size];
         }
     };
 
-    public String getDoc_id() {
-        return doc_id;
+    public String getDoc_title() {
+        return doc_title;
     }
 
-    public void setDoc_id(String doc_id) {
-        this.doc_id = doc_id;
+    public void setDoc_title(String doc_title) {
+        this.doc_title = doc_title;
     }
 
     public String getDoc_nickname() {
@@ -63,6 +66,14 @@ public class ArticleCommentsModel implements Parcelable {
 
     public void setDoc_recommended(String doc_recommended) {
         this.doc_recommended = doc_recommended;
+    }
+
+    public String getDoc_views() {
+        return doc_views;
+    }
+
+    public void setDoc_views(String doc_views) {
+        this.doc_views = doc_views;
     }
 
     public String getDoc_datetime() {
@@ -88,10 +99,11 @@ public class ArticleCommentsModel implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel parcel, int i) {
-        parcel.writeString(doc_content);
+        parcel.writeString(doc_title);
         parcel.writeString(doc_nickname);
         parcel.writeString(doc_recommended);
+        parcel.writeString(doc_views);
         parcel.writeString(doc_datetime);
-        parcel.writeString(doc_id);
+        parcel.writeString(doc_content);
     }
 }

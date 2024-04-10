@@ -1,10 +1,7 @@
 package com.eekm.damoang;
 
-import static android.app.PendingIntent.getActivity;
 import static android.content.ContentValues.TAG;
 import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
-
-import static java.security.AccessController.getContext;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -18,37 +15,29 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.webkit.CookieManager;
-import android.webkit.JavascriptInterface;
-import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eekm.damoang.ui.articles.ArticleCommentsAdapter;
-import com.eekm.damoang.ui.articles.ArticleCommentsModel;
-import com.eekm.damoang.ui.articles.ArticleDocModel;
+import com.eekm.damoang.models.articles.ArticleCommentsAdapter;
+import com.eekm.damoang.models.articles.ArticleCommentsModel;
+import com.eekm.damoang.models.articles.ArticleDocModel;
 import com.eekm.damoang.util.ArticleParser;
 import com.eekm.damoang.util.ArticleView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -290,6 +279,14 @@ public class ViewArticleActivity extends AppCompatActivity {
                 "        imgs[i].setAttribute('onclick','dGetImage(this.getAttribute(\"src\"))');\n" +
                 "    }\n" +
                 "\n" +
+                "    var imgEl = document.getElementsByTagName('img');\n" +
+                "    for (var i=0; i<imgEl.length; i++) {\n" +
+                "        if(imgEl[i].getAttribute('data-cfsrc')) {\n" +
+                "           imgEl[i].setAttribute('src',imgEl[i].getAttribute('data-cfsrc'));\n" +
+                "           imgEl[i].removeAttribute('data-cfsrc');\n" +
+                "           imgEl[i].removeAttribute('style');\n" +
+                "        }\n" +
+                "    }\n" +
                 "})();\n" +
                 "\n" +
                 "function dGetImage(src) {\n" +

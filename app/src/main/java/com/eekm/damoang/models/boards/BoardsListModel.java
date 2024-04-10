@@ -1,4 +1,4 @@
-package com.eekm.damoang.ui.boards;
+package com.eekm.damoang.models.boards;
 
 import android.os.Parcel;
 import android.os.Parcelable;

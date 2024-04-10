@@ -19,28 +19,23 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.eekm.damoang.databinding.ActivityDocListBinding;
-import com.eekm.damoang.databinding.ActivityMainBinding;
-import com.eekm.damoang.ui.articles.ArticleListAdapter;
-import com.eekm.damoang.ui.articles.ArticleListModel;
+import com.eekm.damoang.models.articles.ArticleListAdapter;
+import com.eekm.damoang.models.articles.ArticleListModel;
+import com.eekm.damoang.util.ArticleParser;
 import com.eekm.damoang.util.ArticlesList;
-import com.eekm.damoang.util.BoardsList;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class DocListActivity extends AppCompatActivity {
@@ -173,7 +168,7 @@ public class DocListActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList("mDatas", mDatas);
         outState.putInt("currentPage", currentPage);
-        Log.d("Saved", mDatas.toString());
+        Log.d("Saved", "mDatas: " + mDatas + "\ncurrentPage: " + currentPage);
     }
 
     @Override
@@ -181,7 +176,7 @@ public class DocListActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
         mDatas = savedInstanceState.getParcelableArrayList("mDatas");
         currentPage = savedInstanceState.getInt("currentPage");
-        Log.d("Restored", mDatas.toString());
+        Log.d("Restored", "mDatas: " + mDatas + "\ncurrentPage: " + currentPage);
 
         ProgressBar progressBar = (ProgressBar) findViewById(R.id.pv_load_list);
         progressBar.setVisibility(View.INVISIBLE);
@@ -216,7 +211,7 @@ public class DocListActivity extends AppCompatActivity {
     }
 
     private void loadMore() {
-        Log.d("test", "load more!");
+        Log.d("loadMore", "load next list!");
 
         isLoadMore = true;
         subscribeObservable();
@@ -272,6 +267,7 @@ public class DocListActivity extends AppCompatActivity {
             SharedPreferences preferences = getSharedPreferences("LocalPref", MODE_PRIVATE);
             String savedClearance = preferences.getString("cfClearance", "");
             String savedUa = preferences.getString("currentUserAgent", "");
+            String savedParseRules = preferences.getString("damoangParseRules", "");
 
             if (isLoadMore) {
                 currentPage++;
@@ -288,11 +284,24 @@ public class DocListActivity extends AppCompatActivity {
                         "like Gecko) Damoang/1.0";
             }
 
+            if (savedParseRules.isEmpty()) {
+                ArticleParser parser = new ArticleParser();
+
+                String parserData = parser.getParserData();
+
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("damoangParseRules", parserData);
+                editor.apply();
+
+                savedParseRules = parserData;
+            }
+
             Intent intent = getIntent();
             String board_url = intent.getStringExtra("board_url");
             Log.d("BoardURL", board_url);
 
             mArticlesList = new ArticlesList();
+            mArticlesList.setSavedParseRules(savedParseRules);
             mArticlesList.getList(board_url, savedUa, savedClearance, currentPage);
 
             return mArticlesList;

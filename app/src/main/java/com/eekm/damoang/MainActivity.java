@@ -12,22 +12,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.eekm.damoang.databinding.ActivityDocListBinding;
 import com.eekm.damoang.databinding.ActivityMainBinding;
-import com.eekm.damoang.ui.articles.ArticleListAdapter;
-import com.eekm.damoang.ui.articles.ArticleListModel;
-import com.eekm.damoang.ui.boards.BoardsListAdapter;
-import com.eekm.damoang.ui.boards.BoardsListModel;
+import com.eekm.damoang.models.boards.BoardsListAdapter;
+import com.eekm.damoang.models.boards.BoardsListModel;
 import com.eekm.damoang.util.ArticleParser;
 import com.eekm.damoang.util.BoardsList;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Objects;

@@ -1,4 +1,4 @@
-package com.eekm.damoang.ui.articles;
+package com.eekm.damoang.models.gallery;
 
 import android.view.View;
 import android.widget.ImageView;

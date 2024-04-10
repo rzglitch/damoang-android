@@ -1,4 +1,4 @@
-package com.eekm.damoang.ui.boards;
+package com.eekm.damoang.models.boards;
 
 import android.view.LayoutInflater;
 import android.view.View;
