@@ -130,8 +130,6 @@ public class GalleryListActivity extends AppCompatActivity {
             @Override
             public void onItemClick(int pos) {
                 final GalleryListModel item = mDatas.get(pos);
-                Toast.makeText(getApplicationContext(), "pos: " + pos +
-                        ", data: " + item.getDoc_id(), Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent(GalleryListActivity.this, ViewArticleActivity.class);
                 intent.putExtra("doc_id", item.getDoc_id());

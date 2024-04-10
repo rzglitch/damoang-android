@@ -17,6 +17,5 @@ public class ViewImageInterface {
         Intent intent = new Intent(mContext, ViewImageActivity.class);
         intent.putExtra("imageSrc", src);
         mContext.startActivity(intent);
-        Log.d("ViewImageInterface", "image src: " + src);
     }
 }

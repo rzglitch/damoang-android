@@ -19,10 +19,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
@@ -112,7 +114,6 @@ public class ViewArticleActivity extends AppCompatActivity {
 
         webView = (WebView) findViewById(R.id.wv_document);
 
-        webView.setWebViewClient(new WebViewClient());
         webView.setWebChromeClient(new WebChromeClient());
 
         webView.getSettings().setLoadWithOverviewMode(true);
@@ -129,6 +130,7 @@ public class ViewArticleActivity extends AppCompatActivity {
         webView.setBackgroundColor(Color.TRANSPARENT);
 
         webView.addJavascriptInterface(new ViewImageInterface(this), "viewImage");
+        webView.addJavascriptInterface(new ClickLinkInterface(this), "clickLink");
 
         String nightCss = "#000";
 
@@ -143,7 +145,10 @@ public class ViewArticleActivity extends AppCompatActivity {
         webView.setWebViewClient(new WebViewClient() {
             public void onPageFinished(WebView view, String url) {
                 webView.loadUrl(
-                        "javascript:document.body.style.setProperty(\"color\", \"" + finalNightCss + "\");"
+                        "javascript:document.body.style.setProperty(\"color\", \"" +
+                                finalNightCss + "\");" +
+                                "document.querySelectorAll(\"a\").forEach(" +
+                                "el => el.style.color = \"#808080\");"
                 );
             }
         });
@@ -207,6 +212,7 @@ public class ViewArticleActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe((result) -> {
                     if (!result.links.isEmpty()) {
+                        mCommentDatas = new ArrayList<>();
                         ArticleDocModel item = result.links.get(0);
                         doc_title = item.getDoc_title();
                         doc_views = item.getDoc_views();
@@ -259,6 +265,9 @@ public class ViewArticleActivity extends AppCompatActivity {
                 "* {\n" +
                 "    font-size: 16px !important;\n" +
                 "}\n" +
+                "html, body {\n" +
+                "    word-break: break-all;\n" +
+                "}\n" +
                 "img {\n" +
                 "    max-width: 100%;\n" +
                 "    height: auto;\n" +
@@ -287,10 +296,21 @@ public class ViewArticleActivity extends AppCompatActivity {
                 "           imgEl[i].removeAttribute('style');\n" +
                 "        }\n" +
                 "    }\n" +
+                "\n" +
+                "    var link = document.querySelectorAll('a');\n" +
+                "    for (var j = 0; j < link.length; j++) {\n" +
+                "        if (link[j].querySelector('img') === null) {\n" +
+                "            link[j].setAttribute('onclick','dOpenLink(event, this.getAttribute(\"href\"))');\n" +
+                "        }\n" +
+                "    }\n" +
                 "})();\n" +
                 "\n" +
                 "function dGetImage(src) {\n" +
                 "    viewImage.getImageSrc(src);\n" +
+                "}\n" +
+                "function dOpenLink(e, href) {\n" +
+                "    clickLink.clickArticleLink(href);\n" +
+                "    e.preventDefault();" +
                 "}\n" +
                 "</script>" +
                 "</html>";
