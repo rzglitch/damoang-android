@@ -25,8 +25,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.eekm.damoang.databinding.ActivityGalleryListBinding;
-import com.eekm.damoang.models.gallery.GalleryListAdapter;
-import com.eekm.damoang.models.gallery.GalleryListModel;
+import com.eekm.damoang.models.articles.GalleryListAdapter;
+import com.eekm.damoang.models.articles.GalleryListModel;
+import com.eekm.damoang.util.ArticleParser;
 import com.eekm.damoang.util.GalleriesList;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -253,6 +254,7 @@ public class GalleryListActivity extends AppCompatActivity {
             SharedPreferences preferences = getSharedPreferences("LocalPref", MODE_PRIVATE);
             String savedClearance = preferences.getString("cfClearance", "");
             String savedUa = preferences.getString("currentUserAgent", "");
+            String savedParseRules = preferences.getString("damoangParseRules", "");
 
             if (isLoadMore) {
                 currentPage++;
@@ -269,11 +271,24 @@ public class GalleryListActivity extends AppCompatActivity {
                         "like Gecko) Damoang/1.0";
             }
 
+            if (savedParseRules.isEmpty()) {
+                ArticleParser parser = new ArticleParser();
+
+                String parserData = parser.getParserData();
+
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("damoangParseRules", parserData);
+                editor.apply();
+
+                savedParseRules = parserData;
+            }
+
             Intent intent = getIntent();
             String board_url = intent.getStringExtra("board_url");
             Log.d("BoardURL", board_url);
 
             mArticlesList = new GalleriesList();
+            mArticlesList.setSavedParseRules(savedParseRules);
             mArticlesList.getList(board_url, savedUa, savedClearance, currentPage);
 
             return mArticlesList;

@@ -214,6 +214,7 @@ public class DocListActivity extends AppCompatActivity {
         Log.d("loadMore", "load next list!");
 
         isLoadMore = true;
+
         subscribeObservable();
     }
 
@@ -226,6 +227,10 @@ public class DocListActivity extends AppCompatActivity {
                     if (!isLoadMore) {
                         mDatas = new ArrayList<>();
                     }
+                    if (!mDatas.isEmpty()) {
+                        mDatas.remove(mDatas.size() - 1);
+                    }
+
                     for (int i = 1; i < result.links.size(); i++) {
                         ArticleListModel item = result.links.get(i);
                         String link = item.getDoc_id();
@@ -236,8 +241,12 @@ public class DocListActivity extends AppCompatActivity {
                         String datetime = item.getDoc_datetime();
 
                         mDatas.add(new ArticleListModel(link, title, nick,
-                                recommend, views, datetime));
+                                recommend, views, datetime, 0));
                     }
+
+                    mDatas.add(new ArticleListModel("", "", "",
+                            "", "", "", 1));
+                    mAdapter.notifyItemInserted(mDatas.size() - 1);
 
                     ProgressBar progressBar = (ProgressBar) findViewById(R.id.pv_load_list);
                     progressBar.setVisibility(View.INVISIBLE);
@@ -255,7 +264,6 @@ public class DocListActivity extends AppCompatActivity {
                     adaptRecyclerView();
                 }
                 if (isLoadMore) {
-                    mAdapter.notifyDataSetChanged();
                     isLoadMore = false;
                 }
                 isRefresh = false;

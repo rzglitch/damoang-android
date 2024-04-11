@@ -44,14 +44,14 @@ public class ArticleView {
 
             Document document = conn.parse();
 
-            Elements list = document.select("#bo_v");
-            Elements meta_tags = document.getElementsByTag("meta");
-
             ArticleParser parser = new ArticleParser();
 
             parser.setJsonResult(savedParseRules);
             parser.setDocument(document);
             parser.setViewType("parseArticleView");
+
+            Elements list = parser.parseArticleViewParent();
+            Elements meta_tags = document.getElementsByTag("meta");
 
             String title = parser.parseArticleString("title");
             String nick = "";
@@ -65,42 +65,51 @@ public class ArticleView {
             }
 
             String datetime = parser.parseArticleString("datetime");
-            Elements doc_metadata = list.get(0).select("#bo_v_info .pe-2");
-            String recommend = doc_metadata.get(doc_metadata.size()-1).text();
-            String views = doc_metadata.get(0).text();
-            String content_img = list.get(0).select("#bo_v_img").get(0).toString();
-            String content = list.get(0).select("#bo_v_con.na-convert").get(0).html();
-            String merged_content = content_img + "\n" + content;
 
-            recommend = recommend.split(" ")[0];
-            views = views.split(" ")[0];
-            // datetime = datetime.split(" ")[1];
+            parser.setParent_el_one(list.get(0));
+            Elements doc_metadata = parser.parseArticleElements("doc_metadata");
+
+            parser.setParent_el(doc_metadata);
+            String recommend = parser.parseArticleString("recommend");
+
+            parser.setParent_el(doc_metadata);
+            String views = parser.parseArticleString("views");
+
+            parser.setParent_el_one(list.get(0));
+            String content_img = parser.parseArticleElement("content_img").toString();
+
+            parser.setParent_el_one(list.get(0));
+            String content = parser.parseArticleElement("content").html();
+            String merged_content = content_img + "\n" + content;
 
             linkList.add(new ArticleDocModel(title, nick, recommend, views,datetime,
                     merged_content));
 
             // Comments
-            Elements cmt = document.select("#bo_vc article");
+            parser.setViewType("parseArticleComment");
+            Elements cmt = parser.parseArticleViewParent();
             for (int i = 0; i < cmt.size(); i++) {
                 String cmt_link = cmt.get(i).id();
-                String cmt_content = cmt.get(i).select(".comment-content .na-convert").html();
-                String cmt_nick = cmt.get(i).select(".me-2 .sv_member")
-                        .attr("title");
-                String cmt_datetime = cmt.get(i).select(".ms-auto").text();
+                parser.setParent_el_one(cmt.get(i));
+                String cmt_content = parser.parseArticleElements("cmt_content").html();
 
-                Elements btn_group_sel = cmt.get(i).select(".comment-content .btn-group");
+                parser.setParent_el_one(cmt.get(i));
+                String cmt_nick = parser.parseArticleString("cmt_nick");
+
+                parser.setParent_el_one(cmt.get(i));
+                String cmt_datetime = parser.parseArticleString("cmt_datetime");
+
+
+                parser.setParent_el_one(cmt.get(i));
+                Elements btn_group_sel = parser.parseArticleElements("btn_group_sel");
                 String cmt_recommend = "0";
 
                 if (btn_group_sel.size() == 2) {
-                    cmt_recommend = btn_group_sel.get(1).text();
-                    cmt_recommend = cmt_recommend.split(" ")[1];
+                    parser.setParent_el(btn_group_sel);
+                    cmt_recommend = parser.parseArticleString("cmt_recommend");
                 }
 
                 String content_txt = Jsoup.parse(cmt_content).wholeText();
-
-                cmt_datetime = cmt_datetime.split(" ")[1];
-
-                cmt_nick = cmt_nick.split(" ")[0];
 
                 linkCommentList.add(new ArticleCommentsModel(cmt_link, content_txt, cmt_nick, cmt_recommend, cmt_datetime));
             }

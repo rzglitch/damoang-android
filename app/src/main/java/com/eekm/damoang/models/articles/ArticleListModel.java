@@ -12,15 +12,17 @@ public class ArticleListModel implements Parcelable {
     private String doc_views;
     private String doc_datetime;
     private String doc_id;
+    private int viewType;
 
     public ArticleListModel(String doc_id, String doc_title, String doc_nickname, String doc_recommended,
-                            String doc_views, String doc_datetime) {
+                            String doc_views, String doc_datetime, int viewType) {
         this.doc_title = doc_title;
         this.doc_nickname = doc_nickname;
         this.doc_recommended = doc_recommended;
         this.doc_views = doc_views;
         this.doc_datetime = doc_datetime;
         this.doc_id = doc_id;
+        this.viewType = viewType;
     }
 
     protected ArticleListModel(Parcel in) {
@@ -30,6 +32,7 @@ public class ArticleListModel implements Parcelable {
         doc_views = in.readString();
         doc_datetime = in.readString();
         doc_id = in.readString();
+        viewType = in.readInt();
     }
 
     public static final Creator<ArticleListModel> CREATOR = new Creator<ArticleListModel>() {
@@ -92,6 +95,14 @@ public class ArticleListModel implements Parcelable {
         this.doc_id = doc_id;
     }
 
+    public int getViewType() {
+        return viewType;
+    }
+
+    public void setViewType(int viewType) {
+        this.viewType = viewType;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -105,5 +116,6 @@ public class ArticleListModel implements Parcelable {
         parcel.writeString(doc_views);
         parcel.writeString(doc_datetime);
         parcel.writeString(doc_id);
+        parcel.writeInt(viewType);
     }
 }

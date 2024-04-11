@@ -4,7 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import android.util.Log;
 
-import com.eekm.damoang.models.gallery.GalleryListModel;
+import com.eekm.damoang.models.articles.GalleryListModel;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -38,36 +38,42 @@ public class GalleriesList {
 
             Document document = conn.parse();
 
-
-            Elements list = document.select("#bo_list .row .col");
-
             ArticleParser parser = new ArticleParser();
 
             parser.setJsonResult(savedParseRules);
             parser.setDocument(document);
-            parser.setViewType("parseArticleView");
+            parser.setViewType("parseGalleriesList");
+
+            Elements list = parser.parseArticleViewParent();
 
             for (int i = 0; i < list.size(); i++) {
-                Elements parseLink = list.get(i).select(".card-title a");
+                parser.setParent_el_one(list.get(i));
+                Elements parseLink = parser.parseArticleElements("link");
 
                 if (!parseLink.isEmpty()) {
                     String link = parseLink.attr("abs:href");
 
                     String title = parseLink.text();
                     if (title.isEmpty()) {
-                        title = list.get(i).select(".card-title a").text();
+                        parser.setParent_el_one(list.get(i));
+                        title = parser.parseArticleString("link");
                     }
                     // String nick = list.get(i).select(".sv_member").text();
-                    Elements meta_sel = list.get(i).select(".mt-auto div").select("div");
-                    String datetime = meta_sel.get(meta_sel.size() - 1).text();
-                    String recommend = meta_sel.get(2).text();
-                    String views = meta_sel.get(1).text();
 
-                    datetime = datetime.split(" ")[0];
-                    recommend = recommend.split(" ")[0];
-                    views = views.split(" ")[0];
+                    parser.setParent_el_one(list.get(i));
+                    Elements meta_sel = parser.parseArticleElements("meta");
 
-                    String imgSrc = list.get(i).select("img.object-fit-cover").attr("src");
+                    parser.setParent_el(meta_sel);
+                    String datetime = parser.parseArticleString("datetime");
+
+                    parser.setParent_el(meta_sel);
+                    String recommend = parser.parseArticleString("recommend");
+
+                    parser.setParent_el(meta_sel);
+                    String views = parser.parseArticleString("views");
+
+                    parser.setParent_el_one(list.get(i));
+                    String imgSrc = parser.parseArticleString("img_src");
 
                     linkList.add(new GalleryListModel(link, title, "", recommend, views, datetime, imgSrc));
                 }

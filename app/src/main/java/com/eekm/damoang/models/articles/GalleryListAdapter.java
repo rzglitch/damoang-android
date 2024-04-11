@@ -1,4 +1,4 @@
-package com.eekm.damoang.models.gallery;
+package com.eekm.damoang.models.articles;
 
 import android.view.LayoutInflater;
 import android.view.View;

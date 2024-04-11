@@ -27,6 +27,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -60,6 +61,7 @@ public class ViewArticleActivity extends AppCompatActivity {
     private String doc_recommend = "";
     private String doc_datetime = "";
     private String doc_content = "";
+    private String doc_count = "";
 
     private TextView tv_title;
     private TextView tv_views;
@@ -222,6 +224,14 @@ public class ViewArticleActivity extends AppCompatActivity {
                         doc_content = item.getDoc_content();
 
                         initialDatas();
+
+                        LinearLayout comments_layout = (LinearLayout) findViewById(R.id.l_comments_count);
+                        TextView comments = (TextView) findViewById(R.id.tv_label_comments);
+
+                        if (!result.comments.isEmpty()) {
+                            comments_layout.setVisibility(View.VISIBLE);
+                            comments.setText("댓글 " + result.comments.size());
+                        }
 
                         for (int i = 0; i < result.comments.size(); i++) {
                             ArticleCommentsModel cmt_item = result.comments.get(i);

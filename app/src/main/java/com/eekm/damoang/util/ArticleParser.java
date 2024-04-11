@@ -187,16 +187,27 @@ public class ArticleParser {
     }
 
     private void get(int idx) throws JSONException {
-        if (parent_el_one != null)
+        if (parent_el_one != null && processed_el == null)
             throw new JSONException("Cannot use `get()` on Element.");
 
+        Elements sel = null;
+
         if (processed_el == null) {
-            // 처음에는 parent_el에서 선택합니다.
-            processed_el_one = parent_el.get(idx);
+            if (idx < 0) {
+                sel = parent_el;
+                processed_el_one = parent_el.get(sel.size() - (idx * -1));
+            } else {
+                processed_el_one = parent_el.get(idx);
+            }
         } else {
-            // processed_el에 객체가 존재한다면 processed_el에서 선택합니다.
-            processed_el_one = processed_el.get(idx);
-            processed_el = null;
+            if (idx < 0) {
+                sel = processed_el;
+                processed_el_one = processed_el.get(sel.size() - (idx * -1));
+                processed_el = null;
+            } else {
+                processed_el_one = processed_el.get(idx);
+                processed_el = null;
+            }
         }
     }
 
@@ -316,8 +327,6 @@ public class ArticleParser {
                         // processed_el_one에서 선택합니다.
                         processed_str = processed_el_one.attr(getAttrVal);
                     }
-
-                    break;
                 }
 
                 if (selFunc.equals("select")) {
@@ -334,8 +343,6 @@ public class ArticleParser {
                     String getRegex = listObject.getString("r");
                     int getIndex = listObject.getInt("idx");
                     processed_str = split(getRegex, getIndex);
-
-                    break;
                 }
             }
 

@@ -65,18 +65,23 @@ public class ArticlesList {
                     String title = parseLink.get(0).text();
                     if (title.isEmpty()) {
                         // 공지글
-                        title = list.get(i).select("a strong").text();
+                        parser.setParent_el_one(list.get(i));
+                        title = parser.parseArticleString("title");
                     }
-                    String nick = list.get(i).select(".sv_member").text();
-                    String datetime = list.get(i).select(".wr-date").text();
-                    String recommend = list.get(i).select(".wr-num.order-3").text();
-                    String views = list.get(i).select(".wr-num.order-4").text();
 
-                    datetime = datetime.split(" ")[0];
-                    recommend = recommend.split(" ")[0];
-                    views = views.split(" ")[0];
+                    parser.setParent_el_one(list.get(i));
+                    String nick = parser.parseArticleString("nick");
 
-                    linkList.add(new ArticleListModel(link, title, nick, recommend, views, datetime));
+                    parser.setParent_el_one(list.get(i));
+                    String datetime = parser.parseArticleString("datetime");
+
+                    parser.setParent_el_one(list.get(i));
+                    String recommend = parser.parseArticleString("recommend");
+
+                    parser.setParent_el_one(list.get(i));
+                    String views = parser.parseArticleString("views");
+
+                    linkList.add(new ArticleListModel(link, title, nick, recommend, views, datetime, 0));
                 }
             }
         } catch (IOException e) {
