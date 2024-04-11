@@ -79,8 +79,15 @@ public class ArticleView {
             String content_img = parser.parseArticleElement("content_img").toString();
 
             parser.setParent_el_one(list.get(0));
+            Elements content_video = parser.parseArticleElements("content_video");
+            String videowrap = "";
+            if (!content_video.isEmpty()) {
+                videowrap = content_video.get(0).toString();
+            }
+
+            parser.setParent_el_one(list.get(0));
             String content = parser.parseArticleElement("content").html();
-            String merged_content = content_img + "\n" + content;
+            String merged_content = videowrap + content_img + "\n" + content;
 
             linkList.add(new ArticleDocModel(title, nick, recommend, views,datetime,
                     merged_content));
