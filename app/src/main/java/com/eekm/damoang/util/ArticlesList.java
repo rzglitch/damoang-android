@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+
 public class ArticlesList {
     public List<ArticleListModel> links;
 
@@ -32,16 +35,14 @@ public class ArticlesList {
             String ua = savedUa;
             String URL = boardUrl + "?page=" + page;
 
+            OkHttpClient okHttp = new OkHttpClient();
             Log.d(TAG, "CF clearance = "+cfClearance);
-            Connection.Response conn = Jsoup.connect(URL)
-                    .userAgent(ua).header("Cookie",
-                            "cf_clearance="+cfClearance).execute();
-
-            Document document = conn.parse();
+            Request request = new Request.Builder().url(URL).get().build();
+            Document document = Jsoup.parse(okHttp.newCall(request).execute().body().string());
 
             ArticleParser parser = new ArticleParser();
 
-            parser.setJsonResult(savedParseRules);
+            parser.init(savedParseRules);
             parser.setDocument(document);
             parser.setViewType("parseArticleList");
 
@@ -88,6 +89,7 @@ public class ArticlesList {
             Log.e(TAG, "connection error");
         }
 
+        Log.d(TAG, "parse end");
         this.links = linkList;
     }
 }

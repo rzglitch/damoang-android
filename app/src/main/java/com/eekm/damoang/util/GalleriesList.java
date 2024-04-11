@@ -40,7 +40,7 @@ public class GalleriesList {
 
             ArticleParser parser = new ArticleParser();
 
-            parser.setJsonResult(savedParseRules);
+            parser.init(savedParseRules);
             parser.setDocument(document);
             parser.setViewType("parseGalleriesList");
 

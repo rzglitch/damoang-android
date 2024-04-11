@@ -47,6 +47,7 @@ dependencies {
     implementation("org.jsoup:jsoup:1.17.2")
     implementation("com.nostra13.universalimageloader:universal-image-loader:1.9.5")
     implementation("com.github.bumptech.glide:glide:4.14.2")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
     // Because RxAndroid releases are few and far between, it is recommended you also
     // explicitly depend on RxJava's latest version for bug fixes and new features.

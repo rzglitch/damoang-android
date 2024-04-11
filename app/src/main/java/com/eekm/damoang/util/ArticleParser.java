@@ -25,6 +25,10 @@ public class ArticleParser {
     private Elements processed_el = null;
     private Element processed_el_one = null;
 
+    private JSONObject views = null;
+
+    JSONObject jsonObject;
+
     public void setDocument(Document document) {
         this.document = document;
     }
@@ -49,6 +53,15 @@ public class ArticleParser {
 
     public String getJsonResult() {
         return jsonResult;
+    }
+
+    public void init(String json) {
+        try {
+            setJsonResult(json);
+            jsonObject = new JSONObject(jsonResult);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getParserData() {
@@ -118,12 +131,15 @@ public class ArticleParser {
 
     public JSONObject getArticleViewObject() {
         try {
-            JSONObject jsonObject = new JSONObject(jsonResult);
+            if (views == null) {
+                // views를 가져온 다음 views에 넣습니다.
+                String remoteParser = jsonObject.getString("remoteParser");
+                JSONObject remoteParserObject = new JSONObject(remoteParser);
 
-            String remoteParser = jsonObject.getString("remoteParser");
-            JSONObject remoteParserObject = new JSONObject(remoteParser);
+                views = remoteParserObject.getJSONObject("views");
+            }
 
-            return remoteParserObject.getJSONObject(viewType);
+            return views.getJSONObject(viewType);
         } catch (JSONException e) {
             e.printStackTrace();
         }
