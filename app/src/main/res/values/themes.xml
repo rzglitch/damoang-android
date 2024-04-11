@@ -20,6 +20,11 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="Theme.Damoang.ViewArticle" parent="Theme.Damoang.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
     <style name="Theme.Damoang.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.Damoang.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

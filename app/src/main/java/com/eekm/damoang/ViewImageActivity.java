@@ -35,8 +35,6 @@ public class ViewImageActivity extends AppCompatActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(Color.BLACK);
 
-        setTitle("이미지 보기");
-
         imageView = findViewById(R.id.iv_view_content_image);
 
         subscribeObservable();
@@ -55,7 +53,6 @@ public class ViewImageActivity extends AppCompatActivity {
         return Observable.fromCallable(() -> {
             Intent intent = getIntent();
             String url = intent.getStringExtra("imageSrc");
-            Log.d(TAG, "URL: " + url);
             mArticleImage = new ArticleImage();
             mArticleImage.getImage(url);
 

@@ -86,6 +86,8 @@ public class ViewArticleActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setTheme(R.style.Theme_Damoang_ViewArticle);
         setContentView(R.layout.activity_view_article);
 
         tv_title = (TextView)findViewById(R.id.va_doc_title);
