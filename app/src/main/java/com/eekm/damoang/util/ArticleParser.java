@@ -2,6 +2,8 @@ package com.eekm.damoang.util;
 
 import android.util.Log;
 
+import com.eekm.damoang.BuildConfig;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,7 +72,13 @@ public class ArticleParser {
 
         Log.d("getParserData", "get a new parser rules data.");
         try {
-            String url_text = "https://dkh1.mycafe24.com/damoangdroid/damoangParserTest.json";
+            String url_text;
+            if (BuildConfig.DEBUG) {
+                url_text = "https://dkh1.mycafe24.com/damoangdroid/damoangParserTest.json";
+            } else {
+                url_text = "https://dkh1.mycafe24.com/damoangdroid/damoangParser.json";
+            }
+
             URL url = new URL(url_text);
             connection = (HttpURLConnection) url.openConnection();
             connection.connect();
