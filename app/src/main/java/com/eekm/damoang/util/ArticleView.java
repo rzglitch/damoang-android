@@ -106,6 +106,22 @@ public class ArticleView {
                 parser.setParent_el_one(cmt.get(i));
                 String cmt_datetime = parser.parseArticleString("cmt_datetime");
 
+                parser.setParent_el_one(cmt.get(i));
+                Elements first_img = parser.parseArticleElements("cmt_image");
+
+                String cmt_image = "";
+
+                if (!first_img.isEmpty()) {
+                    cmt_image = first_img.get(0).attr("data-cfsrc");
+
+                    if (cmt_image.isEmpty()) {
+                        cmt_image = first_img.get(0).attr("src");
+                    }
+
+                    if (cmt_image.startsWith("https://damoang.net/plugin/nariya")) {
+                        cmt_image = "";
+                    }
+                }
 
                 parser.setParent_el_one(cmt.get(i));
                 Elements btn_group_sel = parser.parseArticleElements("btn_group_sel");
@@ -116,9 +132,11 @@ public class ArticleView {
                     cmt_recommend = parser.parseArticleString("cmt_recommend");
                 }
 
-                String content_txt = Jsoup.parse(cmt_content).wholeText();
+                String content_txt = Jsoup.parse(cmt_content).wholeText().trim();
+                content_txt = content_txt.replaceAll("\n\n", "\n").replaceAll("\n\n", "\n");
 
-                linkCommentList.add(new ArticleCommentsModel(cmt_link, content_txt, cmt_nick, cmt_recommend, cmt_datetime));
+                linkCommentList.add(new ArticleCommentsModel(cmt_link, content_txt, cmt_image,
+                        cmt_nick, cmt_recommend, cmt_datetime));
             }
         } catch (IOException e) {
             e.printStackTrace();

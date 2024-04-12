@@ -11,14 +11,16 @@ public class ArticleCommentsModel implements Parcelable {
     private String doc_recommended;
     private String doc_datetime;
     private String doc_id;
+    private String doc_image;
 
-    public ArticleCommentsModel(String doc_id, String doc_content, String doc_nickname,
+    public ArticleCommentsModel(String doc_id, String doc_content, String doc_image, String doc_nickname,
                                 String doc_recommended, String doc_datetime) {
         this.doc_content = doc_content;
         this.doc_nickname = doc_nickname;
         this.doc_recommended = doc_recommended;
         this.doc_datetime = doc_datetime;
         this.doc_id = doc_id;
+        this.doc_image = doc_image;
     }
 
     protected ArticleCommentsModel(Parcel in) {
@@ -27,6 +29,7 @@ public class ArticleCommentsModel implements Parcelable {
         doc_recommended = in.readString();
         doc_datetime = in.readString();
         doc_id = in.readString();
+        doc_image = in.readString();
     }
 
     public static final Parcelable.Creator<ArticleCommentsModel> CREATOR = new Parcelable.Creator<ArticleCommentsModel>() {
@@ -81,6 +84,12 @@ public class ArticleCommentsModel implements Parcelable {
         this.doc_content = doc_content;
     }
 
+    public String getDoc_image() { return doc_image; }
+
+    public void setDoc_image(String doc_image) {
+        this.doc_image = doc_image;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -93,5 +102,6 @@ public class ArticleCommentsModel implements Parcelable {
         parcel.writeString(doc_recommended);
         parcel.writeString(doc_datetime);
         parcel.writeString(doc_id);
+        parcel.writeString(doc_image);
     }
 }

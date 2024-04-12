@@ -56,7 +56,7 @@ public class GalleryListAdapter extends RecyclerView.Adapter<GalleryListViewHold
 
         Glide.with(holder.itemView)
                 .load(listData.getDoc_thumb())
-                .override(100, 100)
+                .override(1200, 1200)
                 .skipMemoryCache(true)
                 .dontAnimate()
                 .into(holder.doc_thumb_iv);

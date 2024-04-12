@@ -1,6 +1,7 @@
 package com.eekm.damoang.models.articles;
 
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,6 +14,8 @@ public class ArticleCommentsViewHolder extends RecyclerView.ViewHolder {
     TextView doc_recommended;
     TextView doc_datetime;
     TextView doc_id;
+    TextView doc_image;
+    ImageView doc_image_iv;
 
     ArticleCommentsViewHolder(View itemView) {
         super(itemView);
@@ -21,5 +24,7 @@ public class ArticleCommentsViewHolder extends RecyclerView.ViewHolder {
         doc_content = (TextView) itemView.findViewById(R.id.doc_content2);
         doc_datetime = (TextView) itemView.findViewById(R.id.doc_datetime2);
         doc_id = (TextView) itemView.findViewById(R.id.doc_id2);
+        doc_image = (TextView) itemView.findViewById(R.id.tv_comment_image);
+        doc_image_iv = (ImageView) itemView.findViewById(R.id.iv_comment_image);
     }
 }

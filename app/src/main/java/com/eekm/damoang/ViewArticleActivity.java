@@ -239,11 +239,13 @@ public class ViewArticleActivity extends AppCompatActivity {
                             ArticleCommentsModel cmt_item = result.comments.get(i);
                             String cmt_link = cmt_item.getDoc_id();
                             String cmt_content = cmt_item.getDoc_content();
+                            String cmt_image = cmt_item.getDoc_image();
                             String cmt_nick = cmt_item.getDoc_nickname();
                             String cmt_recommend = cmt_item.getDoc_recommended();
                             String cmt_datetime = cmt_item.getDoc_datetime();
 
-                            mCommentDatas.add(new ArticleCommentsModel(cmt_link, cmt_content, cmt_nick,
+                            mCommentDatas.add(new ArticleCommentsModel(
+                                    cmt_link, cmt_content, cmt_image, cmt_nick,
                                     cmt_recommend, cmt_datetime));
                         }
                     } else {
