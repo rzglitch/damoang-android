@@ -1,11 +1,12 @@
-package com.eekm.damoang.util;
+package com.eekm.damoang.contents;
 
 import static android.content.ContentValues.TAG;
 
 import android.util.Log;
 
-import com.eekm.damoang.models.articles.ArticleCommentsModel;
-import com.eekm.damoang.models.articles.ArticleDocModel;
+import com.eekm.damoang.models.article.ArticleCommentsModel;
+import com.eekm.damoang.models.article.ArticleDocModel;
+import com.eekm.damoang.util.ArticleParser;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -23,6 +24,8 @@ public class ArticleView {
     public List<ArticleCommentsModel> comments;
     private String savedParseRules = null;
 
+    public Boolean isOnlyAngers = null;
+
     public void setSavedParseRules(String savedParseRules) {
         this.savedParseRules = savedParseRules;
     }
@@ -31,6 +34,9 @@ public class ArticleView {
         List<ArticleDocModel> linkList = new ArrayList<>();
         List<ArticleCommentsModel> linkCommentList = new ArrayList<>();
 
+        Connection.Response conn;
+        Document document = null;
+
         try {
             String ua = savedUa;
             String URL = doc_id;
@@ -38,12 +44,16 @@ public class ArticleView {
             Log.d(TAG, "URL = "+URL);
             Log.d(TAG, "UA = "+savedUa);
             Log.d(TAG, "CF clearance = "+cfClearance);
-            Connection.Response conn = Jsoup.connect(URL)
+            conn = Jsoup.connect(URL)
                     .userAgent(ua).header("Cookie",
                             "cf_clearance="+cfClearance+";PHPSESSID=a").execute();
 
-            Document document = conn.parse();
+            document = conn.parse();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
+        try {
             ArticleParser parser = new ArticleParser();
 
             parser.init(savedParseRules);
@@ -89,7 +99,7 @@ public class ArticleView {
             String content = parser.parseArticleElement("content").html();
             String merged_content = videowrap + content_img + "\n" + content;
 
-            linkList.add(new ArticleDocModel(title, nick, recommend, views,datetime,
+            linkList.add(new ArticleDocModel(title, nick, recommend, views, datetime,
                     merged_content));
 
             // Comments
@@ -123,6 +133,8 @@ public class ArticleView {
                     }
                 }
 
+                Log.d(TAG, cmt_content);
+
                 parser.setParent_el_one(cmt.get(i));
                 Elements btn_group_sel = parser.parseArticleElements("btn_group_sel");
                 String cmt_recommend = "0";
@@ -138,8 +150,11 @@ public class ArticleView {
                 linkCommentList.add(new ArticleCommentsModel(cmt_link, content_txt, cmt_image,
                         cmt_nick, cmt_recommend, cmt_datetime));
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Log.e(TAG, "This article is only visible to damoang's members.");
+            if (document.text().
+                    contains("우리 \"앙\"님만 열람할 수 있어요!"))
+                this.isOnlyAngers = true;
         }
 
         this.links = linkList;

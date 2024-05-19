@@ -25,10 +25,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.eekm.damoang.databinding.ActivityGalleryListBinding;
-import com.eekm.damoang.models.articles.GalleryListAdapter;
-import com.eekm.damoang.models.articles.GalleryListModel;
+import com.eekm.damoang.models.article.GalleryListAdapter;
+import com.eekm.damoang.models.article.GalleryListModel;
 import com.eekm.damoang.util.ArticleParser;
-import com.eekm.damoang.util.GalleriesList;
+import com.eekm.damoang.contents.GalleriesList;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;

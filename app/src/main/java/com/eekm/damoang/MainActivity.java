@@ -19,10 +19,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.eekm.damoang.databinding.ActivityMainBinding;
-import com.eekm.damoang.models.boards.BoardsListAdapter;
-import com.eekm.damoang.models.boards.BoardsListModel;
+import com.eekm.damoang.models.board.BoardListAdapter;
+import com.eekm.damoang.models.board.BoardListModel;
 import com.eekm.damoang.util.ArticleParser;
-import com.eekm.damoang.util.BoardsList;
+import com.eekm.damoang.contents.BoardsList;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -34,9 +34,9 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class MainActivity extends AppCompatActivity {
     private @androidx.annotation.NonNull ActivityMainBinding binding;
     private BoardsList mBoardsList;
-    private BoardsListAdapter mAdapter;
+    private BoardListAdapter mAdapter;
     private RecyclerView mBoardsRecyclerView;
-    private ArrayList<BoardsListModel> mDatas = new ArrayList<>();
+    private ArrayList<BoardListModel> mDatas = new ArrayList<>();
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         mBoardsRecyclerView = findViewById(R.id.rv_boards_list);
 
-        mAdapter = new BoardsListAdapter(mDatas);
+        mAdapter = new BoardListAdapter(mDatas);
 
         mBoardsRecyclerView.setAdapter(mAdapter);
         mBoardsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -113,11 +113,11 @@ public class MainActivity extends AppCompatActivity {
                         mDatas = new ArrayList<>();
 
                         for (int i = 0; i < result.lists.size(); i++) {
-                            BoardsListModel item = result.lists.get(i);
+                            BoardListModel item = result.lists.get(i);
                             String board_name = item.getBoard_name();
                             String board_url = item.getBoard_url();
 
-                            mDatas.add(new BoardsListModel(board_name, board_url));
+                            mDatas.add(new BoardListModel(board_name, board_url));
                         }
 
                         adaptRecyclerView();
@@ -148,11 +148,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void adaptRecyclerView() {
-        mAdapter = new BoardsListAdapter(mDatas);
-        mAdapter.setOnItemClickEventListener(new BoardsListAdapter.OnItemClickListener() {
+        mAdapter = new BoardListAdapter(mDatas);
+        mAdapter.setOnItemClickEventListener(new BoardListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int pos) {
-                final BoardsListModel item = mDatas.get(pos);
+                final BoardListModel item = mDatas.get(pos);
                 /* Toast.makeText(getApplicationContext(), "pos: " + pos +
                         ", data: " + item.getBoard_url(), Toast.LENGTH_SHORT).show();
                  */

@@ -1,4 +1,4 @@
-package com.eekm.damoang.models.articles;
+package com.eekm.damoang.models.article;
 
 import android.view.View;
 import android.widget.ImageView;

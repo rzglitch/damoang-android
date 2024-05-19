@@ -1,4 +1,4 @@
-package com.eekm.damoang.util;
+package com.eekm.damoang.contents;
 
 import static android.content.ContentValues.TAG;
 

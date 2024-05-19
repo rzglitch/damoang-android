@@ -1,33 +1,33 @@
-package com.eekm.damoang.models.boards;
+package com.eekm.damoang.models.board;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-public class BoardsListModel implements Parcelable {
+public class BoardListModel implements Parcelable {
     private String board_name;
     private String board_url;
 
-    public BoardsListModel(String board_name, String board_url) {
+    public BoardListModel(String board_name, String board_url) {
         this.board_name = board_name;
         this.board_url = board_url;
     }
 
-    protected BoardsListModel(Parcel in) {
+    protected BoardListModel(Parcel in) {
         board_name = in.readString();
         board_url = in.readString();
     }
 
-    public static final Creator<BoardsListModel> CREATOR = new Creator<BoardsListModel>() {
+    public static final Creator<BoardListModel> CREATOR = new Creator<BoardListModel>() {
         @Override
-        public BoardsListModel createFromParcel(Parcel in) {
-            return new BoardsListModel(in);
+        public BoardListModel createFromParcel(Parcel in) {
+            return new BoardListModel(in);
         }
 
         @Override
-        public BoardsListModel[] newArray(int size) {
-            return new BoardsListModel[size];
+        public BoardListModel[] newArray(int size) {
+            return new BoardListModel[size];
         }
     };
 

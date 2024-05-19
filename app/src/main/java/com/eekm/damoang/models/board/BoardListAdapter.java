@@ -1,4 +1,4 @@
-package com.eekm.damoang.models.boards;
+package com.eekm.damoang.models.board;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,27 +11,27 @@ import com.eekm.damoang.R;
 
 import java.util.List;
 
-public class BoardsListAdapter extends RecyclerView.Adapter<BoardsListViewHolder> {
+public class BoardListAdapter extends RecyclerView.Adapter<BoardListViewHolder> {
     public interface OnItemClickListener {
         void onItemClick(int pos);
     }
 
     private OnItemClickListener clickListener;
-    private List<BoardsListModel> dataList;
+    private List<BoardListModel> dataList;
 
-    public BoardsListAdapter(List<BoardsListModel> dataList) {
+    public BoardListAdapter(List<BoardListModel> dataList) {
         this.dataList = dataList;
     }
 
-    public void setOnItemClickEventListener (BoardsListAdapter.OnItemClickListener listener) {
+    public void setOnItemClickEventListener (BoardListAdapter.OnItemClickListener listener) {
         clickListener = listener;
     }
 
     @NonNull
     @Override
-    public BoardsListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public BoardListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.boards_list_item_main, parent, false);
-        BoardsListViewHolder holder = new BoardsListViewHolder(v);
+        BoardListViewHolder holder = new BoardListViewHolder(v);
 
         v.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,8 +45,8 @@ public class BoardsListAdapter extends RecyclerView.Adapter<BoardsListViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull BoardsListViewHolder holder, int pos) {
-        BoardsListModel listData = dataList.get(pos);
+    public void onBindViewHolder(@NonNull BoardListViewHolder holder, int pos) {
+        BoardListModel listData = dataList.get(pos);
         holder.board_name.setText(listData.getBoard_name());
         holder.board_url.setText(listData.getBoard_url());
     }

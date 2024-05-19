@@ -4,14 +4,14 @@ plugins {
 
 android {
     namespace = "com.eekm.damoang"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.eekm.damoang"
         minSdk = 27
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.1.1-alpha"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk {

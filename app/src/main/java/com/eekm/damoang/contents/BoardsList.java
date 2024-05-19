@@ -1,6 +1,6 @@
-package com.eekm.damoang.util;
+package com.eekm.damoang.contents;
 
-import com.eekm.damoang.models.boards.BoardsListModel;
+import com.eekm.damoang.models.board.BoardListModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,10 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BoardsList {
-    public List<BoardsListModel> lists;
+    public List<BoardListModel> lists;
 
     public void getBoardsList() {
-        List<BoardsListModel> linkList = new ArrayList<>();
+        List<BoardListModel> linkList = new ArrayList<>();
         HttpURLConnection connection = null;
         BufferedReader reader = null;
         try {
@@ -53,7 +53,7 @@ public class BoardsList {
                     JSONObject communityListObject = communityListArray.getJSONObject(i);
                     String communityName = communityListObject.getString("name");
                     String communityUrl = communityListObject.getString("url");
-                    linkList.add(new BoardsListModel(communityName, communityUrl));
+                    linkList.add(new BoardListModel(communityName, communityUrl));
                 }
 
                 String somoimList = jsonObject.getString("somoimList");
@@ -63,7 +63,7 @@ public class BoardsList {
                     JSONObject somoimListObject = somoimListArray.getJSONObject(i);
                     String somoimName = somoimListObject.getString("name");
                     String somoimUrl = somoimListObject.getString("url");
-                    linkList.add(new BoardsListModel(somoimName, somoimUrl));
+                    linkList.add(new BoardListModel(somoimName, somoimUrl));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

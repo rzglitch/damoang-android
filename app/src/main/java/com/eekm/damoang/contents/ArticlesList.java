@@ -1,10 +1,11 @@
-package com.eekm.damoang.util;
+package com.eekm.damoang.contents;
 
 import static android.content.ContentValues.TAG;
 
 import android.util.Log;
 
-import com.eekm.damoang.models.articles.ArticleListModel;
+import com.eekm.damoang.models.article.ArticleListModel;
+import com.eekm.damoang.util.ArticleParser;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -15,9 +16,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 
 public class ArticlesList {
     public List<ArticleListModel> links;
@@ -35,10 +33,14 @@ public class ArticlesList {
             String ua = savedUa;
             String URL = boardUrl + "?page=" + page;
 
-            OkHttpClient okHttp = new OkHttpClient();
+            Log.d(TAG, "URL = "+URL);
+            Log.d(TAG, "UA = "+savedUa);
             Log.d(TAG, "CF clearance = "+cfClearance);
-            Request request = new Request.Builder().url(URL).get().build();
-            Document document = Jsoup.parse(okHttp.newCall(request).execute().body().string());
+            Connection.Response conn = Jsoup.connect(URL)
+                    .userAgent(ua).header("Cookie",
+                            "cf_clearance="+cfClearance+";PHPSESSID=a").execute();
+
+            Document document = conn.parse();
 
             ArticleParser parser = new ArticleParser();
 

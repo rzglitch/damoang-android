@@ -1,4 +1,4 @@
-package com.eekm.damoang.models.articles;
+package com.eekm.damoang.models.article;
 
 import android.os.Parcel;
 import android.os.Parcelable;

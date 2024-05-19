@@ -1,10 +1,11 @@
-package com.eekm.damoang.util;
+package com.eekm.damoang.contents;
 
 import static android.content.ContentValues.TAG;
 
 import android.util.Log;
 
-import com.eekm.damoang.models.articles.GalleryListModel;
+import com.eekm.damoang.models.article.GalleryListModel;
+import com.eekm.damoang.util.ArticleParser;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;

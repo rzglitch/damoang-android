@@ -7,6 +7,7 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -19,12 +20,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
@@ -32,11 +31,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eekm.damoang.models.articles.ArticleCommentsAdapter;
-import com.eekm.damoang.models.articles.ArticleCommentsModel;
-import com.eekm.damoang.models.articles.ArticleDocModel;
+import com.eekm.damoang.models.article.ArticleCommentsAdapter;
+import com.eekm.damoang.models.article.ArticleCommentsModel;
+import com.eekm.damoang.models.article.ArticleDocModel;
 import com.eekm.damoang.util.ArticleParser;
-import com.eekm.damoang.util.ArticleView;
+import com.eekm.damoang.contents.ArticleView;
 
 import java.util.ArrayList;
 
@@ -249,13 +248,26 @@ public class ViewArticleActivity extends AppCompatActivity {
                                     cmt_recommend, cmt_datetime));
                         }
                     } else {
-                        Toast.makeText(getApplicationContext(),
-                                "리스트를 불러오는 도중 오류가 발생했습니다.",
-                                Toast.LENGTH_SHORT).show();
+                        String errMsg = "게시물을 불러올 수 없습니다.";
 
-                        Intent intent = new Intent(
-                                ViewArticleActivity.this, CfChallengeActivity.class);
-                        startActivityResult.launch(intent);
+                        Toast.makeText(getApplicationContext(), errMsg,
+                                Toast.LENGTH_SHORT).show();
+                        if (result.isOnlyAngers) {
+                            AlertDialog.Builder builder =
+                                    new AlertDialog.Builder(ViewArticleActivity.this);
+                            builder.setTitle("알림");
+                            builder.setMessage(
+                                    "우리 \"앙\"님만 열람할 수 있어요!\n" +
+                                            "로그인 후 다시 시도해 주세요."
+                            );
+                            builder.setPositiveButton("확인", (dialog, which) -> {
+                                Log.d(TAG, "OK button pressed");
+                            });
+                            builder.setNegativeButton("로그인", (dialog, which) -> {
+                                Log.d(TAG, "LOGIN button pressed");
+                            });
+                            builder.show();
+                        }
                     }
                 });
     }

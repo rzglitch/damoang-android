@@ -1,8 +1,5 @@
-package com.eekm.damoang.models.articles;
+package com.eekm.damoang.models.article;
 
-import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +7,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.eekm.damoang.R;
 
 import java.util.List;
@@ -44,16 +40,8 @@ public class ArticleCommentsAdapter extends RecyclerView.Adapter<ArticleComments
         holder.doc_datetime.setText(listData.getDoc_datetime());
         holder.doc_id.setText(listData.getDoc_id());
 
-        String doc_image = listData.getDoc_image();
-        if (!doc_image.isEmpty()) {
-            Glide.with(holder.itemView)
-                    .load(listData.getDoc_image())
-                    .override(1200, 1200)
-                    .skipMemoryCache(true)
-                    .dontAnimate()
-                    .into(holder.doc_image_iv);
-            holder.doc_image_iv.setVisibility(View.VISIBLE);
-        }
+        //String content = listData.getDoc_content();
+        //String[] split = content.split("<img")
     }
 
     @Override
