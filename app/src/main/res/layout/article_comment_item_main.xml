@@ -9,7 +9,9 @@
         android:id="@+id/doc_content2"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:text="TextView" />
+        android:text="TextView"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/doc_id2"
@@ -45,7 +47,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
-            tools:srcCompat="@drawable/image" />
+            android:visibility="gone"
+            tools:srcCompat="@drawable/image"
+            tools:visibility="visible" />
     </LinearLayout>
 
     <Space
